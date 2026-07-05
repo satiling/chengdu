@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
 <title>南京→成都及周边 6 天 5 晚深度包车行程 · 路小鲜定制</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -23,13 +25,13 @@
   .flight-card b{font-size:14px}
   /* layout */
   .wrap{display:flex;gap:16px;padding:16px;max-width:1500px;margin:0 auto}
-  .map-col{flex:0 0 46%;position:sticky;top:14px;align-self:flex-start;height:calc(100vh - 28px)}
+  .map-col{flex:0 0 46%;position:sticky;top:14px;align-self:flex-start;height:calc(100vh - 28px);display:flex;flex-direction:column;gap:8px}
   .itin-col{flex:1;min-width:0}
-  #map{width:100%;height:100%;border-radius:14px;box-shadow:0 4px 18px rgba(0,0,0,.08);border:1px solid var(--line)}
-  .map-legend{position:absolute;left:12px;bottom:14px;z-index:500;background:rgba(255,255,255,.94);border-radius:10px;padding:9px 12px;font-size:11.5px;box-shadow:0 2px 10px rgba(0,0,0,.12);max-width:200px}
-  .map-legend .lg{display:flex;align-items:center;gap:6px;margin:3px 0}
+  .map-title{flex:none;background:rgba(255,255,255,.94);border-radius:10px;padding:8px 12px;font-size:12.5px;font-weight:600;box-shadow:0 2px 10px rgba(0,0,0,.12);text-align:center}
+  #map{width:100%;flex:1 1 auto;min-height:300px;border-radius:14px;box-shadow:0 4px 18px rgba(0,0,0,.08);border:1px solid var(--line);background:#e8eaed}
+  .map-legend{flex:none;background:rgba(255,255,255,.94);border-radius:10px;padding:9px 12px;font-size:11.5px;box-shadow:0 2px 10px rgba(0,0,0,.12);display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center}
+  .map-legend .lg{display:flex;align-items:center;gap:6px}
   .map-legend .dot{width:11px;height:11px;border-radius:50%}
-  .map-title{position:absolute;left:12px;top:12px;z-index:500;background:rgba(255,255,255,.94);border-radius:10px;padding:8px 12px;font-size:12.5px;font-weight:600;box-shadow:0 2px 10px rgba(0,0,0,.12)}
   /* day card */
   .day{background:var(--card);border-radius:14px;margin-bottom:16px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.05);border:1px solid var(--line)}
   .day-head{padding:14px 18px;color:#fff;display:flex;align-items:center;gap:10px;cursor:pointer}
@@ -78,7 +80,8 @@
   /* ===== 平板：左右分栏改为上下堆叠 ===== */
   @media(max-width:980px){
     .wrap{flex-direction:column;padding:12px;gap:12px}
-    .map-col{position:relative;height:52vh;flex:none;min-height:320px}
+    .map-col{position:relative;flex:none}
+    #map{height:52vh;min-height:320px}
     .itin-col{width:100%}
     .grid2{grid-template-columns:1fr}
     .bottom{padding:0 12px}
@@ -94,10 +97,10 @@
     .flight-card b{font-size:13px}
     /* wrap & map */
     .wrap{padding:10px;gap:10px}
-    .map-col{height:46vh;min-height:300px;width:100%}
-    #map{border-radius:12px}
-    .map-title{left:8px;top:8px;right:8px;padding:6px 10px;font-size:11px;border-radius:8px;text-align:center;max-width:none}
-    .map-legend{left:8px;bottom:8px;padding:6px 9px;font-size:10px;max-width:none;min-width:100px;border-radius:8px}
+    .map-col{width:100%}
+    .map-title{padding:6px 10px;font-size:11px;border-radius:8px}
+    #map{height:46vh;min-height:300px;border-radius:12px}
+    .map-legend{padding:7px 10px;font-size:10.5px;border-radius:8px;gap:6px 12px}
     .map-legend .dot{width:9px;height:9px}
     /* day card */
     .day{border-radius:12px;margin-bottom:12px}
@@ -136,7 +139,7 @@
   /* ===== 超窄屏（≤380px）兜底 ===== */
   @media(max-width:380px){
     header h1{font-size:15.5px}
-    .map-col{height:42vh;min-height:260px}
+    #map{height:42vh;min-height:260px}
     .day-head h2{font-size:13.5px;min-width:55%}
     .stop .name{font-size:13px}
   }
@@ -158,14 +161,15 @@
 <div class="wrap">
   <!-- LEFT MAP -->
   <div class="map-col">
-    <div id="map"></div>
     <div class="map-title">📍 全程动线 · 点击右侧景点可定位</div>
+    <div id="map"></div>
     <div class="map-legend">
-      <div style="font-weight:700;margin-bottom:4px">图例</div>
-      <div class="lg"><span class="dot" style="background:#0ea5e9"></span>景点 / 美食</div>
+      <div class="lg" style="font-weight:700">图例</div>
+      <div class="lg"><span class="dot" style="background:#0ea5e9"></span>景点/美食</div>
       <div class="lg"><span class="dot" style="background:#10b981"></span>住宿点</div>
       <div class="lg"><span class="dot" style="background:#ef4444"></span>机场</div>
       <div class="lg"><span style="display:inline-block;width:18px;border-top:3px solid #f97316"></span>包车路线</div>
+      <div class="lg" style="color:#f97316;font-weight:600">⛰️ 海拔见点位弹窗</div>
     </div>
   </div>
 
@@ -527,6 +531,7 @@
       <div class="tip-card"><h4>🌶️ 美食避雷</h4><p>景区内/步行街小吃溢价高，钻小巷更地道；警惕「野生菌高价宰客」菜单先问价；乐山甜皮鸭、钵钵鸡、跷脚牛肉值得专门吃；肠胃弱者逐步适应辣度。</p></div>
       <div class="tip-card"><h4>📱 推荐 App</h4><p>高德/百度地图（导航+实时路况）、12306/携程（机酒）、大众点评（餐厅排队取号）、九寨沟/三星堆官方公众号（预约）、墨迹天气（山区阵雨预警）。</p></div>
       <div class="tip-card altai"><h4>🏔️ 高原反应预防</h4><p>九寨沟海拔 2000–3100m，多数反应轻微。核心：不剧烈运动、不洗澡过热、不饮酒、多喝温水、早睡。备氧气瓶应急但不依赖；高血压/心脏病/孕妇谨慎评估；症状重立即下撤。</p></div>
+      <div class="tip-card"><h4>⛰️ 全程海拔阶梯</h4><p><b>Day1</b> 天府机场≈462m → 三星堆≈470m（盆地）｜<b>Day2</b> 都江堰≈720m / 熊猫谷≈700m（过渡带，适应期）｜<b>Day3-4</b> 九寨沟沟口≈2000m，长海最高≈3100m（高原区⚠️）｜<b>Day5</b> 返回成都≈500m（回落）｜<b>Day6</b> 乐山大佛≈360m（盆地）。海拔在 Day3 急升 1300m，是高反风险拐点，务必缓行。</p></div>
       <div class="tip-card"><h4>🌧️ 7 月天气与穿搭</h4><p>成都/乐山 25–33℃湿热多阵雨；九寨沟 15–25℃早晚凉。穿搭「短袖+防晒外套+冲锋衣」叠穿，雨具随身。山区紫外线强，防晒 SPF50+。</p></div>
       <div class="tip-card"><h4>💰 预算总览（人均）</h4><p>机票往返 ¥1400–2400｜包车 6 天人均 ¥1200–1800｜住宿 5 晚 ¥800–1500｜门票 ¥485｜餐饮 ¥600–900｜其他 ¥200｜合计约 ¥4200–5800。</p></div>
       <div class="tip-card"><h4>🚗 停车与车程提示</h4><p>都江堰/武侯祠/春熙路市区停车难，优先景区官方停车场；九寨沟沟口停车场早满，住沟口步行入园最省；长途服务区在汶川、绵阳加满油。</p></div>
@@ -538,28 +543,28 @@
 
 <script>
 // ====== MAP ======
-const map = L.map('map',{scrollWheelZoom:true,zoomControl:true}).setView([31.6,103.9],7);
+const map = L.map('map',{scrollWheelZoom:true,zoomControl:true,attributionControl:true}).setView([31.6,103.9],7);
 
-// 高德浅色底图（免密钥瓦片）
+// 高德浅色中文底图（免密钥瓦片）
 L.tileLayer('https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}',{
   subdomains:['1','2','3','4'],maxZoom:17,attribution:'© Amap'
 }).addTo(map);
 
 // 点位数据
 const PTS = {
-  'airport-go':   {ll:[30.312,104.441], name:'成都天府国际机场', type:'airport', day:'Day1 起点'},
-  'sanxingdui':   {ll:[31.043,104.268], name:'三星堆博物馆（广汉）', type:'spot', day:'Day1'},
-  'dujiangyan':   {ll:[30.9996,103.6107], name:'都江堰景区', type:'spot', day:'Day2'},
-  'panda':        {ll:[31.0476,103.595], name:'熊猫谷（都江堰基地）', type:'spot', day:'Day2'},
-  'route-up':     {ll:[32.6,103.6], name:'都江堰→九寨沟途中', type:'spot', day:'Day3', span:true},
-  'jiuzhai':      {ll:[33.2602,103.924], name:'九寨沟风景区', type:'spot', day:'Day3-4'},
-  'route-back':   {ll:[31.7,103.4], name:'九寨沟→成都返程途中', type:'spot', day:'Day5', span:true},
-  'wuhou':        {ll:[30.644,104.048], name:'武侯祠（成都）', type:'spot', day:'Day5'},
-  'chunxi':       {ll:[30.659,104.0817], name:'春熙路 / 太古里', type:'spot', day:'Day5'},
-  'route-leshan': {ll:[30.2,103.9], name:'成都→乐山途中', type:'spot', day:'Day6', span:true},
-  'leshan':       {ll:[29.544,103.771], name:'乐山大佛景区', type:'spot', day:'Day6'},
-  'diba':         {ll:[29.555,103.770], name:'棣爸油炸（张公桥街89号）', type:'spot', day:'Day6'},
-  'airport-back': {ll:[30.312,104.441], name:'天府机场（返程）', type:'airport', day:'Day6 终点'}
+  'airport-go':   {ll:[30.312,104.441], name:'成都天府国际机场', type:'airport', day:'Day1 起点', alt:'约462m'},
+  'sanxingdui':   {ll:[31.043,104.268], name:'三星堆博物馆（广汉）', type:'spot', day:'Day1', alt:'约470m'},
+  'dujiangyan':   {ll:[30.9996,103.6107], name:'都江堰景区', type:'spot', day:'Day2', alt:'约720m'},
+  'panda':        {ll:[31.0476,103.595], name:'熊猫谷（都江堰基地）', type:'spot', day:'Day2', alt:'约700m'},
+  'route-up':     {ll:[32.6,103.6], name:'都江堰→九寨沟途中', type:'spot', day:'Day3', span:true, alt:'700→2000m'},
+  'jiuzhai':      {ll:[33.2602,103.924], name:'九寨沟风景区', type:'spot', day:'Day3-4', alt:'沟口2000m / 长海3100m'},
+  'route-back':   {ll:[31.7,103.4], name:'九寨沟→成都返程途中', type:'spot', day:'Day5', span:true, alt:'2000→500m'},
+  'wuhou':        {ll:[30.644,104.048], name:'武侯祠（成都）', type:'spot', day:'Day5', alt:'约500m'},
+  'chunxi':       {ll:[30.659,104.0817], name:'春熙路 / 太古里', type:'spot', day:'Day5', alt:'约500m'},
+  'route-leshan': {ll:[30.2,103.9], name:'成都→乐山途中', type:'spot', day:'Day6', span:true, alt:'500→360m'},
+  'leshan':       {ll:[29.544,103.771], name:'乐山大佛景区', type:'spot', day:'Day6', alt:'约360m（凌云山顶约450m）'},
+  'diba':         {ll:[29.555,103.770], name:'棣爸油炸（张公桥街89号）', type:'spot', day:'Day6', alt:'约360m'},
+  'airport-back': {ll:[30.312,104.441], name:'天府机场（返程）', type:'airport', day:'Day6 终点', alt:'约462m'}
 };
 // 住宿点
 const STAYS = [
@@ -575,7 +580,7 @@ const markers = {};
 Object.entries(PTS).forEach(([k,v])=>{
   const col = v.type==='airport' ? '#ef4444' : '#0ea5e9';
   const m = L.marker(v.ll,{icon:icon(col)}).addTo(map);
-  m.bindPopup(`<div class="marker-pop"><b>${v.name}</b><br>${v.day}</div>`);
+  m.bindPopup(`<div class="marker-pop"><b>${v.name}</b><br>📍 海拔 <b style="color:#f97316">${v.alt||'—'}</b><br>${v.day}</div>`);
   markers[k]=m;
 });
 STAYS.forEach(s=>{
@@ -611,6 +616,16 @@ DIST.forEach(d=>{
 
 // 点击右侧"地图定位"联动
 document.querySelectorAll('[data-pt]').forEach(el=>{
+  const k = el.getAttribute('data-pt');
+  const v = PTS[k];
+  // 自动注入海拔标签
+  if(v && v.alt){
+    const tag=document.createElement('span');
+    tag.className='chip';
+    tag.style.cssText='background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;font-weight:600';
+    tag.textContent='⛰️ '+v.alt;
+    el.parentNode.insertBefore(tag, el.nextSibling);
+  }
   el.addEventListener('click',e=>{
     e.preventDefault();
     const k = el.getAttribute('data-pt');
@@ -622,8 +637,14 @@ document.querySelectorAll('[data-pt]').forEach(el=>{
   });
 });
 
-// 适配高度
+// 适配高度（flex 容器需多次校正 + 监听尺寸变化）
+const _mapEl = document.getElementById('map');
 setTimeout(()=>map.invalidateSize(),300);
+setTimeout(()=>map.invalidateSize(),800);
+if(window.ResizeObserver){
+  new ResizeObserver(()=>map.invalidateSize()).observe(_mapEl);
+}
+window.addEventListener('resize',()=>map.invalidateSize());
 </script>
 </body>
 </html>
