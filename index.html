@@ -228,7 +228,7 @@
           </div>
         </div>
         <div class="stay"><div class="s-head">🏨 当日住宿 · 全季酒店(成都春熙路太古里店)</div>
-          <div class="stay-opt"><span class="tag mid">中档</span><span class="nm">全季酒店(成都春熙路太古里店)</span><span class="dt">📍春熙路/太古里核心区，步行至太古里约 5 分钟，地铁 2/3 号线春熙路站步行可达，到成都东站地铁约 15 分钟</span></div>
+          <div class="stay-opt"><span class="tag mid">中档</span><span class="nm">全季酒店(成都春熙路太古里店)</span><a data-pt="hotel-chengdu">📍地图定位</a><span class="dt">📍春熙路/太古里核心区，步行至太古里约 5 分钟，地铁 2/3 号线春熙路站步行可达，到成都东站地铁约 15 分钟</span></div>
           <div class="stay-note">💡 华住旗下全季品牌，位置核心，晚上直接逛街吃火锅；<b>次日从成都东站坐高铁去九寨沟仅地铁 15 分钟</b>，不用赶远路。连续住同一酒店，行李不用挪。</div>
         </div>
         <div class="hl">🎯 本日亮点：一落地即冲国宝级博物馆，当晚入住成都市区，养精蓄锐次日高铁进九寨</div>
@@ -290,7 +290,7 @@
           </div>
         </div>
         <div class="stay"><div class="s-head">🏨 当日住宿 · 西子·礼白酒店(九寨沟店)</div>
-          <div class="stay-opt"><span class="tag mid">中档</span><span class="nm">西子·礼白酒店(九寨沟店)</span><span class="dt">📍九寨沟口漳扎镇，近景区大门，包车送酒店门口，步行入园方便</span></div>
+          <div class="stay-opt"><span class="tag mid">中档</span><span class="nm">西子·礼白酒店(九寨沟店)</span><a data-pt="hotel-jiuzhai">📍地图定位</a><span class="dt">📍九寨沟口漳扎镇，近景区大门，包车送酒店门口，步行入园方便</span></div>
           <div class="stay-note">💡 紧邻景区，次日能最早一批抢观光车，不用清早赶路。海拔约 2000m，是进沟前最佳缓冲点。连续住两晚不换酒店，行李不用挪。</div>
         </div>
         <div class="hl">🎯 本日亮点：高铁 1.5h 替代包车 5.5h 颠簸，下午 1 点即达沟口，多出半天适应海拔</div>
@@ -615,26 +615,26 @@ const PTS = {
   'panda':          {ll:[31.0476,103.595], name:'熊猫谷（都江堰基地）', type:'spot', day:'Day5', alt:'海拔约700m'},
   'leshan':         {ll:[29.544,103.771], name:'乐山大佛景区', type:'spot', day:'Day6', alt:'海拔约360m（凌云山顶约450m）'},
   'diba':           {ll:[29.555,103.770], name:'棣爸油炸（张公桥街89号）', type:'spot', day:'Day6', alt:'海拔约360m'},
-  'airport-back':   {ll:[30.312,104.441], name:'天府机场（返程）', type:'airport', day:'Day6 终点', alt:'海拔约462m'}
+  'airport-back':   {ll:[30.312,104.441], name:'天府机场（返程）', type:'airport', day:'Day6 终点', alt:'海拔约462m'},
+  'hotel-chengdu':  {ll:[30.659,104.082], name:'全季酒店(成都春熙路太古里店)', type:'hotel', day:'Day1/Day4/Day5 住宿', alt:'海拔约500m'},
+  'hotel-jiuzhai':  {ll:[33.265,103.905], name:'西子·礼白酒店(九寨沟店)', type:'hotel', day:'Day2-3 住宿', alt:'海拔约2000m'}
 };
-// 住宿点
-const STAYS = [
-  {ll:[30.66,104.07], name:'Day1/Day4/Day5 住宿：成都市中心（春熙路/天府广场）'},
-  {ll:[33.26,103.9], name:'Day2-3 住宿：九寨沟口（漳扎镇彭丰村/隆康村）'}
-];
 
 const icon = (c)=>L.divIcon({className:'',html:`<div style="width:18px;height:18px;border-radius:50%;background:${c};border:3px solid #fff;box-shadow:0 0 0 2px ${c},0 2px 6px rgba(0,0,0,.4)"></div>`,iconSize:[18,18],iconAnchor:[9,9]});
 const stayIcon = L.divIcon({className:'',html:'<div style="font-size:20px">🏨</div>',iconSize:[24,24],iconAnchor:[12,12]});
 
 const markers = {};
 Object.entries(PTS).forEach(([k,v])=>{
-  const col = v.type==='airport' ? '#ef4444' : '#0ea5e9';
-  const m = L.marker(v.ll,{icon:icon(col)}).addTo(map);
-  m.bindPopup(`<div class="marker-pop"><b>${v.name}</b><br>📍 海拔 <b style="color:#f97316">${v.alt||'—'}</b><br>${v.day}</div>`);
+  let m;
+  if(v.type==='hotel'){
+    m = L.marker(v.ll,{icon:stayIcon}).addTo(map);
+    m.bindPopup(`<div class="marker-pop"><b>🏨 ${v.name}</b><br>📍 海拔 <b style="color:#f97316">${v.alt||'—'}</b><br>${v.day}</div>`);
+  } else {
+    const col = v.type==='airport' ? '#ef4444' : '#0ea5e9';
+    m = L.marker(v.ll,{icon:icon(col)}).addTo(map);
+    m.bindPopup(`<div class="marker-pop"><b>${v.name}</b><br>📍 海拔 <b style="color:#f97316">${v.alt||'—'}</b><br>${v.day}</div>`);
+  }
   markers[k]=m;
-});
-STAYS.forEach(s=>{
-  L.marker(s.ll,{icon:stayIcon}).addTo(map).bindPopup(s.name);
 });
 
 // 路线连线（按天着色）
