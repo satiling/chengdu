@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<title>贵州6天5晚深度游行程 · 黄果树/荔波/西江苗寨/镇远古镇</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  :root{
+    --bg:#f6f7f9; --card:#ffffff; --ink:#1f2937; --sub:#6b7280; --line:#e5e7eb;
+    --brand:#0ea5e9; --brand-d:#0369a1; --accent:#f97316; --green:#10b981; --red:#ef4444; --gold:#eab308;
+    --d1:#0ea5e9; --d2:#8b5cf6; --d3:#10b981; --d4:#f97316; --d5:#ec4899; --d6:#0284c7;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"PingFang SC","Microsoft YaHei",system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  /* header */
+  header{background:linear-gradient(135deg,#10b981 0%,#0d9488 50%,#0369a1 100%);color:#fff;padding:22px 28px}
+  header h1{font-size:22px;font-weight:700;letter-spacing:.5px}
+  header .sub{font-size:13px;opacity:.92;margin-top:5px}
+  .flight-bar{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px}
+  .flight-card{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.25);border-radius:10px;padding:9px 13px;font-size:12.5px;backdrop-filter:blur(4px)}
+  .flight-card b{font-size:14px}
+  /* layout */
+  .wrap{display:flex;gap:16px;padding:16px;max-width:1500px;margin:0 auto}
+  .map-col{flex:0 0 46%;position:sticky;top:14px;align-self:flex-start;height:calc(100vh - 28px);display:flex;flex-direction:column;gap:8px}
+  .itin-col{flex:1;min-width:0}
+  .map-title{flex:none;background:rgba(255,255,255,.94);border-radius:10px;padding:8px 12px;font-size:12.5px;font-weight:600;box-shadow:0 2px 10px rgba(0,0,0,.12);text-align:center}
+  #map{width:100%;flex:1 1 auto;min-height:300px;border-radius:14px;box-shadow:0 4px 18px rgba(0,0,0,.08);border:1px solid var(--line);background:#e8eaed}
+  .map-legend{flex:none;background:rgba(255,255,255,.94);border-radius:10px;padding:9px 12px;font-size:11.5px;box-shadow:0 2px 10px rgba(0,0,0,.12);display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center}
+  .map-legend .lg{display:flex;align-items:center;gap:6px}
+  .map-legend .dot{width:11px;height:11px;border-radius:50%}
+  /* day card */
+  .day{background:var(--card);border-radius:14px;margin-bottom:16px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.05);border:1px solid var(--line)}
+  .day-head{padding:14px 18px;color:#fff;display:flex;align-items:center;gap:10px;cursor:pointer}
+  .day-head .tag{background:rgba(255,255,255,.22);padding:2px 9px;border-radius:20px;font-size:11.5px}
+  .day-head h2{font-size:16px;font-weight:700}
+  .day-head .meta{margin-left:auto;font-size:12px;opacity:.92}
+  .day-body{padding:16px 18px}
+  /* timeline */
+  .tl{position:relative;padding-left:26px}
+  .tl::before{content:"";position:absolute;left:8px;top:6px;bottom:6px;width:2px;background:var(--line)}
+  .stop{position:relative;margin-bottom:18px}
+  .stop:last-child{margin-bottom:0}
+  .stop::before{content:"";position:absolute;left:-22px;top:4px;width:13px;height:13px;border-radius:50%;background:#fff;border:3px solid var(--brand);box-shadow:0 0 0 3px #e0f2fe}
+  .stop .time{font-size:12px;color:var(--brand-d);font-weight:700}
+  .stop .name{font-size:14.5px;font-weight:700;margin:2px 0 4px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .stop .name a{color:var(--brand-d);text-decoration:none;cursor:pointer;border-bottom:1px dashed var(--brand-d)}
+  .stop .name a:hover{color:var(--accent);border-color:var(--accent)}
+  .chip{font-size:10.5px;padding:1px 7px;border-radius:10px;background:#f1f5f9;color:var(--sub);font-weight:600}
+  .stop .desc{font-size:13px;color:#374151;margin-bottom:6px}
+  .stop .drive{font-size:12px;color:var(--sub);background:#f8fafc;border-left:3px solid var(--brand);padding:4px 9px;border-radius:0 6px 6px 0;margin:6px 0}
+  .tips{background:#fff7ed;border:1px solid #fed7aa;border-radius:9px;padding:9px 12px;font-size:12.5px;margin-top:6px}
+  .tips .t-head{color:var(--accent);font-weight:700;font-size:12px;margin-bottom:3px;display:flex;align-items:center;gap:4px}
+  .tips ul{margin:0;padding-left:16px}
+  .tips li{margin:2px 0;color:#7c2d12}
+  .stay{background:#ecfdf5;border:1px solid #a7f3d0;border-radius:9px;padding:10px 12px;font-size:12.5px;margin-top:8px}
+  .stay .s-head{color:var(--green);font-weight:700;font-size:12px;margin-bottom:5px}
+  .stay-opt{display:flex;gap:6px;align-items:baseline;margin:4px 0;flex-wrap:wrap}
+  .stay-opt .tag{flex:none;font-size:10.5px;font-weight:700;padding:1px 6px;border-radius:4px;color:#fff;white-space:nowrap}
+  .stay-opt .tag.hi{background:#059669}
+  .stay-opt .tag.mid{background:#3b82f6}
+  .stay-opt .tag.eco{background:#f59e0b}
+  .stay-opt .nm{font-size:12px;font-weight:600;color:#1e293b}
+  .stay-opt .dt{font-size:11.5px;color:var(--sub);flex:1;min-width:120px}
+  .stay-note{font-size:11px;color:var(--sub);margin-top:5px;line-height:1.5}
+  .day-budget{font-size:12px;color:var(--sub);text-align:right;margin-top:6px}
+  .hl{text-align:center;font-size:12.5px;color:var(--brand-d);font-weight:600;background:#eff6ff;border-radius:8px;padding:6px;margin-top:8px}
+  /* bottom */
+  .bottom{max-width:1500px;margin:0 auto 30px;padding:0 16px}
+  .panel{background:var(--card);border-radius:14px;padding:18px 20px;margin-bottom:16px;box-shadow:0 2px 10px rgba(0,0,0,.05);border:1px solid var(--line)}
+  .panel h3{font-size:16px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px;border-bottom:2px solid var(--line);padding-bottom:8px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px 26px}
+  .checklist{font-size:13px}
+  .checklist .grp{font-weight:700;color:var(--brand-d);margin:8px 0 4px;font-size:13px}
+  .checklist label{display:block;margin:3px 0;padding-left:22px;position:relative;cursor:default}
+  .checklist input{position:absolute;left:0;top:2px;accent-color:var(--brand)}
+  .tips-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+  .tip-card{background:#f8fafc;border-radius:10px;padding:11px 13px;border-left:4px solid var(--brand)}
+  .tip-card.altai{border-left-color:var(--red)}
+  .tip-card h4{font-size:13px;font-weight:700;margin-bottom:5px}
+  .tip-card p{font-size:12.5px;color:#4b5563}
+  .disclaimer{font-size:11.5px;color:var(--sub);text-align:center;padding:10px}
+  .marker-pop{font-size:12px}
+  .marker-pop b{font-size:13px}
+  /* ===== 平板：左右分栏改为上下堆叠 ===== */
+  @media(max-width:980px){
+    .wrap{flex-direction:column;padding:12px;gap:12px}
+    .map-col{position:relative;flex:none}
+    #map{height:52vh;min-height:320px}
+    .itin-col{width:100%}
+    .grid2{grid-template-columns:1fr}
+    .bottom{padding:0 12px}
+  }
+  /* ===== 手机：进一步压缩，修复错位 ===== */
+  @media(max-width:640px){
+    /* header */
+    header{padding:16px 14px}
+    header h1{font-size:17px;line-height:1.35;word-break:break-word}
+    header .sub{font-size:12px}
+    .flight-bar{flex-direction:column;gap:8px;margin-top:10px}
+    .flight-card{font-size:12px;padding:8px 11px;line-height:1.5;word-break:break-word;overflow-wrap:anywhere}
+    .flight-card b{font-size:13px}
+    /* wrap & map */
+    .wrap{padding:10px;gap:10px}
+    .map-col{width:100%}
+    .map-title{padding:6px 10px;font-size:11px;border-radius:8px}
+    #map{height:46vh;min-height:300px;border-radius:12px}
+    .map-legend{padding:7px 10px;font-size:10.5px;border-radius:8px;gap:6px 12px}
+    .map-legend .dot{width:9px;height:9px}
+    /* day card */
+    .day{border-radius:12px;margin-bottom:12px}
+    .day-head{padding:12px 14px;flex-wrap:wrap;gap:6px 8px}
+    .day-head .tag{font-size:10.5px;padding:2px 7px}
+    .day-head h2{font-size:14.5px;flex:1 1 auto;min-width:60%}
+    .day-head .meta{margin-left:0;font-size:11px;width:100%;order:3}
+    .day-body{padding:13px 14px}
+    /* timeline */
+    .tl{padding-left:22px}
+    .tl::before{left:7px}
+    .stop::before{left:-20px;width:11px;height:11px;border-width:2px}
+    .stop .time{font-size:11.5px}
+    .stop .name{font-size:13.5px;gap:6px}
+    .stop .name a{font-size:11.5px}
+    .stop .desc{font-size:12.5px}
+    .stop .drive{font-size:11.5px;padding:4px 8px}
+    .chip{font-size:10px;padding:1px 6px}
+    .tips{padding:8px 10px;font-size:12px}
+    .tips .t-head{font-size:11.5px}
+    .tips li{font-size:12px}
+    .stay{padding:9px 10px;font-size:12px}
+    .hl{font-size:12px;padding:6px}
+    .day-budget{font-size:11.5px}
+    /* bottom panels */
+    .panel{padding:14px 13px;border-radius:12px}
+    .panel h3{font-size:14.5px}
+    .tips-grid{grid-template-columns:1fr;gap:10px}
+    .tip-card{padding:10px 11px}
+    .tip-card h4{font-size:12.5px}
+    .tip-card p{font-size:12px}
+    .checklist{font-size:12.5px}
+    .checklist .grp{font-size:12.5px}
+    .disclaimer{font-size:11px;padding:8px 6px}
+  }
+  /* ===== 超窄屏（≤380px）兜底 ===== */
+  @media(max-width:380px){
+    header h1{font-size:15.5px}
+    #map{height:42vh;min-height:260px}
+    .day-head h2{font-size:13.5px;min-width:55%}
+    .stop .name{font-size:13px}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🗺️ 南京 → 贵州 · 6 天 5 晚深度行程</h1>
+  <div class="sub">黄果树瀑布 / 荔波小七孔 / 西江千户苗寨 / 镇远古镇 / 青岩古镇 / 甲秀楼 / 黔灵山 · 喀斯特山水+民族风情全景路线</div>
+  <div class="flight-bar">
+    <div class="flight-card">✈️ <b>去程</b>　07:30 南京禄口 T2 → 10:00 贵阳龙洞堡 T2　东方航空 MU2765 / 深圳航空 ZH9553 等 · 约 2h30m · 参考 ¥700–1300</div>
+    <div class="flight-card">✈️ <b>返程</b>　约 17:00–21:00 贵阳龙洞堡 → 南京禄口 · 约 2h30m · 参考 ¥700–1300</div>
+    <div class="flight-card">🚗 <b>交通</b>　全程包车/自驾为主 + 贵阳⇌凯里高铁段 · 景点分散包车最省心 · 三人出行行李无忧</div>
+    <div class="flight-card">💰 <b>人均预算</b>　约 ¥3800–5500（含机票+包车+高铁+宿+票+餐）</div>
+  </div>
+</header>
+
+<div class="wrap">
+  <!-- LEFT MAP -->
+  <div class="map-col">
+    <div class="map-title">📍 全程动线 · 点击右侧景点可定位</div>
+    <div id="map"></div>
+    <div class="map-legend">
+      <div class="lg" style="font-weight:700">图例</div>
+      <div class="lg"><span class="dot" style="background:#0ea5e9"></span>景点/美食</div>
+      <div class="lg"><span class="dot" style="background:#10b981"></span>住宿点</div>
+      <div class="lg"><span class="dot" style="background:#ef4444"></span>机场</div>
+      <div class="lg"><span style="display:inline-block;width:18px;border-top:3px solid #f97316"></span>包车路线</div>
+      <div class="lg"><span style="display:inline-block;width:18px;border-top:3px dashed #8b5cf6"></span>高铁</div>
+    </div>
+  </div>
+
+  <!-- RIGHT ITINERARY -->
+  <div class="itin-col" id="itin">
+
+    <!-- DAY 1 -->
+    <div class="day">
+      <div class="day-head" style="background:linear-gradient(90deg,#10b981,#34d399)">
+        <span class="tag">Day 1</span>
+        <h2>抵黔访古 · 青岩寻味</h2>
+        <span class="meta">🚐 约 40km 包车 · 含南京飞贵阳</span>
+      </div>
+      <div class="day-body">
+        <div class="tl">
+          <div class="stop">
+            <div class="time">07:30 – 10:00</div>
+            <div class="name">✈️ 南京禄口 → 贵阳龙洞堡国际机场 <a data-pt="airport-go">📍地图定位</a></div>
+            <div class="desc">搭乘早班直达航班（东方航空 MU2765 / 深圳航空 ZH9553 / 四川航空 3U3556 等均有 07:00–08:00 起飞班次，落地龙洞堡 T2）。飞行约 2 小时 30 分。落地后取行李，包车师傅接机。</div>
+            <div class="tips"><div class="t-head">⚡ 避坑贴士</div><ul>
+              <li>南京禄口距市区较远，建议起飞前 2h 到达；早班机可选禄口机场附近酒店住宿一晚，免赶早高峰。</li>
+              <li>龙洞堡机场距贵阳市区约 11km，打车/网约车约 25 分钟；建议提前在 App 预约接机包车，避免现场排队。</li>
+              <li>贵州多山路，不建议刚到就自驾；贵阳海拔约 1100m，气候凉爽（夏季均温 23℃），被称为"避暑之都"。</li>
+              <li>选位靠窗，黔东南喀斯特峰丛地貌壮观，天气好时俯瞰如水墨画。</li>
+            </ul></div>
+            <div class="drive">🚐 龙洞堡机场 → 青岩古镇：约 35km / 40min（经贵阳环城高速）</div>
+          </div>
+          <div class="stop">
+            <div class="time">12:00 – 13:00</div>
+            <div class="name">🍜 午餐 · 青岩古镇小吃</div>
+            <div class="desc">青岩是贵阳最有名的美食古镇。必吃：状元蹄（卤猪脚）、糕粑稀饭、玫瑰冰粉、鸡辣椒。人均 ¥40–60。推荐古镇内"王记状元蹄""谢家糕粑"。</div>
+          </div>
+          <div class="stop">
+            <div class="time">13:00 – 16:30</div>
+            <div class="name">🏯 青岩古镇 <span class="chip">门票 ¥10</span><a data-pt="qingyan">📍地图定位</a></div>
+            <div class="desc">贵州四大古镇之一，明清军事要塞，600 余年历史。九寺、八庙、五阁、二祠，黔青岩石板路、背街老巷最出片。城墙可登，俯瞰古镇全貌。建议游览 3–3.5h。推荐路线：北门进 → 定广门城墙 → 背街（网红石板巷）→ 赵理伦百岁坊 → 万寿宫 → 南门出。</div>
+            <div class="tips"><div class="t-head">⚡ 避坑贴士</div><ul>
+              <li><b>背街石板巷是最佳出片点</b>，青石板被岁月磨得发亮，光影效果好，下午斜阳最佳。</li>
+              <li>古镇商业化程度中等，状元蹄、糕粑稀饭值得一吃；但"银饰""蜡染"需辨真伪，手工蜡染认准蓝白分明、有冰裂纹的。</li>
+              <li>城墙门票另收 ¥10 可登，俯瞰全镇值得上去；古镇通票 ¥10（含城墙）。</li>
+              <li>夏季周末人流量大，建议工作日或上午早到；古镇内无遮阴，备好防晒。</li>
+            </ul></div>
+            <div class="drive">🚐 青岩古镇 → 贵阳市区：约 30km / 45min</div>
+          </div>
+          <div class="stop">
+            <div class="time">17:00 – 18:30</div>
+            <div class="name">🌳 黔灵山公园 <span class="chip">门票 ¥5</span><a data-pt="qianlingshan">📍地图定位</a></div>
+            <div class="desc">"黔南第一山"，贵阳市区最大公园。弘福寺烧香、猕猴观赏区看野生猕猴、黔灵湖划船。猕猴散养是最大特色，数百只野生猕猴在园区自由活动。建议游览 1.5h。</div>
+            <div class="tips"><div class="t-head">⚡ 避坑贴士</div><ul>
+              <li><b>野生猕猴会抢食物</b>，切勿手里拿塑料袋/亮色食物靠近；不要直视猴眼、不要抚摸。</li>
+              <li>索道单程 ¥15 上山、步行下山最省力；全程步行约 2h 较累。</li>
+              <li>弘福寺素斋便宜好吃（¥15/份），午餐可在此解决。</li>
+            </ul></div>
+          </div>
+          <div class="stop">
+            <div class="time">19:00 – 21:30</div>
+            <div class="name">🌃 甲秀楼夜景 + 二七路美食街 <span class="chip">免费</span><a data-pt="jiaxiu">📍地图定位</a></div>
+            <div class="desc">甲秀楼是贵阳地标，建于明代南明河鳌矶石上，三层三檐四角攒尖顶，夜景灯光绝美。之后步行至二七路美食街觅食：肠旺面、丝娃娃、恋爱豆腐果、烤脑花、花溪牛肉粉，人均 ¥50–80。</div>
+            <div class="tips"><div class="t-head">⚡ 避坑贴士</div><ul>
+              <li>甲秀楼夜景 19:00–22:00 灯光全开，最佳拍摄点在对岸翠微园方向。</li>
+              <li>二七路美食街晚上人挤人，推荐" buting 丝娃娃""雷家豆腐圆子"老字号。</li>
+              <li>贵阳小吃偏辣偏酸，肠胃弱者备好肠胃药；酸汤鱼选"红酸汤"更地道。</li>
+            </ul></div>
+          </div>
+        </div>
+        <div class="stay"><div class="s-head">🏨 当日住宿 · 贵阳市区（喷水池/大十字商圈）</div>
+          <div class="stay-opt"><span class="tag mid">中档</span><span class="nm">全季酒店(贵阳喷水池店) / 亚朵酒店(贵阳大十字店)</span><a data-pt="hotel-guiyang">📍地图定位</a><span class="dt">📍贵阳市中心，步行至甲秀楼约 15 分钟，地铁 1 号线喷水池站，到贵阳北站约 15 分钟，包车接驳方便</span></div>
+          <div class="stay-note">💡 市中心商圈配套齐全，晚上直接逛夜市吃小吃；<b>次日包车去黄果树从市区出发约 130km/2h</b>，早上 8 点出发刚好。连续住 1 晚，行李次日带走不挪。</div>
+        </div>
+        <div class="hl">🎯 本日亮点：一落地即游 600 年明清古镇 + 猕猴互动 + 甲秀楼夜景 + 贵阳地道小吃</div>
+        <div class="day-budget">💰 本日预算：人均约 ¥420（含机票分摊 / 餐 / 票 / 住宿分摊）</div>
+      </div>
+    </div>
+
+    <!-- DAY 2 -->
+    <div class="day">
+      <div class="day-head" style="background:linear-gradient(90deg,#0ea5e9,#38bdf8)">
+        <span class="tag">Day 2</span>
+        <h2>飞瀑奇观 · 黄果树深度</h2>
+        <span class="meta">🚐 约 260km 包车 · 全天景区</span>
+      </div>
+      <div class="day-body">
+        <div class="tl">
+          <div class="stop">
+            <div class="time">07:30 – 09:30</div>
+            <div class="name">🚐 贵阳 → 黄果树景区</div>
+            <div class="desc">包车从贵阳市区出发，经沪昆高速约 130km / 2h 到黄果树景区大门。建议 7:30 出发，9:30 开园即入避开大团。沿途可远眺喀斯特峰丛地貌。</div>
+            <div class="drive">🚐 贵阳 → 黄果树：约 130km / 2h（经沪昆高速西行）</div>
+            <div class="tips"><div class="t-head">⚡ 避坑贴士</div><ul>
+              <li><b>黄果树门票需提前在"黄果树景区"官方微信公众号预约</b>，旺季（7–8 月）至少提前 3 天；门票两日有效。</li>
+              <li>门票 ¥160（含观光车），大瀑布水帘洞需单独排队，旺季排队 30–60min。</li>
+              <li>景区由三个子景区组成：陡坡塘、天星桥、大瀑布，观光车串联，<b>建议顺序：陡坡塘 → 天星桥 → 大瀑布</b>（先易后难，大瀑布下午光线好）。</li>
+            </ul></div>
+          </div>
+          <div class="stop">
+            <div class="time">09:30 – 11:00</div>
+            <div class="name">🌊 陡坡塘瀑布 <a data-pt="doupotang">📍地图定位</a></div>
+            <div class="desc">黄果树瀑布群中最宽的瀑布（105m），《西游记》片尾曲取景地。水量大时如万马奔腾，景色壮观且步行少，适合作为第一个景点热身。游览约 1–1.5h。</div>
+            <div class="tips"><div class="t-head">⚡ 避坑贴士</div><ul>
+              <li>陡坡塘是三个景区中步行最少的，约 1km 平路，先逛此处热身最合理。</li>
+              <li>西游记师徒雕像在入口处，适合拍照打卡。</li>
+            </ul></div>
+            <div class="drive">🚐 陡坡塘 → 天星桥：观光车约 10min</div>
+          </div>
+          <div class="stop">
+            <div class="time">11:00 – 13:30</div>
+            <div class="name">🌉 天星桥景区 <a data-pt="tianxingqiao">📍地图定位</a></div>
+            <div class="desc">喀斯特水上石林奇观，"有水无山"的独特景观。天生桥、星峡飞瀑、银链坠潭瀑布（天星桥精华，被列为中国最美瀑布之一）。全程步行约 3.5km，游览 2–2.5h。</div>
+            <div class="tips"><div class="t-head">⚡ 避坑贴士</div><ul>
+              <li><b>天星桥分上下两段，下段（银链坠潭瀑布）是精华，很多游客走一半就返回会错过！务必走完全程。</b></li>
+              <li>全程步行约 3.5km，上上下下较累，穿防滑徒步鞋；石板路湿滑注意脚下。</li>
+              <li>景区内"数生步"365 块石头对应生日，找自己的生日石踩一踩是传统玩法。</li>
+              <li>天星桥内无餐厅，建议自带水和干粮。</li>
+            </ul></div>
+          </div>
+          <div class="stop">
+            <div class="time">13:30 – 14:30</div>
+            <div class="name">🍜 午餐 · 景区餐厅/安顺特色</div>
+            <div class="desc">景区内观光车停靠点有简餐（人均 ¥40–60），或出景区到安顺市区吃"夺肉""小锅凉粉""裹卷"。安顺是贵州美食重镇，比景区内性价比高很多。</div>
+            <div class="drive">🚐 天星桥 → 大瀑布：观光车约 10min</div>
+          </div>
+          <div class="stop">
+            <div class="time">14:30 – 17:30</div>
+            <div class="name">💦 黄果树大瀑布 <span class="chip">水帘洞</span><a data-pt="huangguoshu">📍地图定位</a></div>
+            <div class="desc">亚洲第一大瀑布，高 77.8m、宽 101m。主瀑+犀牛潭+水帘洞（从瀑布背后穿行，全球唯一可从六面观赏的瀑布）。游览约 2.5–3h。下午 15:00 后常有彩虹横跨犀牛潭，是最佳拍摄时间。</div>
+            <div class="tips"><div class="t-head">⚡ 避坑贴士</div><ul>
+              <li><b>水帘洞是最大亮点</b>，从瀑布背后穿行约 134m，需排队 30–60min（旺季），务必穿雨衣/防水外套，水雾极大。</li>
+              <li>水帘洞入口在瀑布右侧栈道，沿路下行至洞口；洞内路窄湿滑，单行道不可逆行。</li>
+              <li><b>下午 15:00–17:00 犀牛潭常有彩虹</b>，是最佳出片时间，正好下午到此。</li>
+              <li>观瀑亭（第一观瀑台）可拍大瀑布全景，第六观瀑台最近最震撼。</li>
+              <li>景区入口可租雨衣 ¥10/件，比自带方便；景区内禁止使用无人机。</li>
+            </ul></div>
+            <div class="drive">🚐 黄果树景区 → 安顺市区：约 40km / 50min</div>
+          </div>
+          <div class="stop">
+            <div class="time">18:30 – 20:00</div>
+            <div class="name">🍜 晚餐 · 安顺市区美食</div>
+            <div class="desc">安顺是贵州美食之城，推荐"旧州鸡辣子""安顺裹卷""小锅凉粉""破酥包"。人均 ¥50–80。安顺小吃集中在儒林路、好吃街一带。</div>
+            <div class="tips"><div class="t-head">⚡ 避坑贴士</div><ul>
+              <li>安顺"裹卷"是必吃，薄如蝉翼的米皮裹各种蔬菜辣椒酱，¥3–5/个。</li>
+              <li>"小锅凉粉"是安顺独创，砂锅煮凉粉+折耳根+肉末，味道独特。</li>
+            </ul></div>
+          </div>
+        </div>
+        <div class="stay"><div class="s-head">🏨 当日住宿 · 安顺市区</div>
+          <div class="stay-opt"><span class="tag mid">中档</span><span class="nm">安顺万绿城铂兰酒店 / 全季酒店(安顺塔山东路店)</span><a data-pt="hotel-anshun">📍地图定位</a><span class="dt">📍安顺市区中心，距黄果树景区约 40km/50min，次日出发荔波约 250km</span></div>
+          <div class="stay-note">💡 安顺市区住宿性价比高、美食多，比住黄果树景区门口便宜且选择多。次日从安顺出发去荔波小七孔约 250km/3.5h，早上 7:30 出发中午到。</div>
+        </div>
+        <div class="hl">🎯 本日亮点：一天看尽黄果树三大子景区 + 水帘洞穿瀑 + 犀牛潭彩虹 + 安顺美食</div>
+        <div class="day-budget">💰 本日预算：人均约 ¥420（票 ¥160 + 餐 ¥120 + 包车分摊 + 住宿分摊）</div>
+      </div>
+    </div>
+
+    <!-- DAY 3 -->
+    <div class="day">
+      <div class="day-head" style="background:linear-gradient(90deg,#10b981,#34d399)">
+        <span class="tag">Day 3</span>
+        <h2>喀斯特秘境 · 荔波小七孔</h2>
+        <span class="meta">🚐 约 250km 包车 · 全天景区</span>
+      </div>
+      <div class="day-body">
+        <div class="tl">
+          <div class="stop">
+            <div class="time">07:30 – 11:00</div>
+            <div class="name">🚐 安顺 → 荔波小七孔景区</div>
+            <div class="desc">包车从安顺出发，经都匀高速约 250km / 3.5h 到荔波小七孔景区东门。途经黔南喀斯特山区，沿途峰丛地貌壮观。建议 7:30 出发，11:00 到景区。</div>
+            <div class="drive">🚐 安顺 → 荔波小七孔：约 250km / 3.5h（经都匀高速南行）</div>
+            <div class="tips"><div class="t-head">⚡ 避坑贴士</div><ul>
+              <li><b>荔波小七孔门票需提前在"荔波小七孔景区"官方微信公众号预约</b>，旺季至少提前 3 天；门票 ¥130 + 观光车 ¥40。</li>
+              <li>景区门票两日有效，含小七孔+大七孔；<b>建议一天走完小七孔</b>，大七孔时间不够可放弃。</li>
+              <li>荔波夏季气温 25–32℃，紫外线强但水体清凉，是避暑玩水胜地。</li>
+            </ul></div>
+          </div>
+          <div class="stop">
+            <div class="time">11:00 – 17:30</div>
+            <div class="name">🏞️ 荔波小七孔景区 <span class="chip">门票 ¥130</span><span class="chip">观光车 ¥40</span><span class="chip">需预约</span><a data-pt="libo">📍地图定位</a></div>
+            <div class="desc">世界自然遗产，被誉为"地球腰带上的绿宝石"。核心路线（从东到西）：小七孔古桥 → 拉雅瀑布 → 68级跌水瀑布 → 水上森林 → 鸳鸯湖 → 卧龙潭。全程约 7km，游览 5–6h。<b>建议从东门进、西门出，一路向上不走回头路。</b></div>
+            <div class="tips"><div class="t-head">⚡ 避坑贴士 · 最优游览路线</div><ul>
+              <li><b>核心策略：东门进 → 西门出，从低到高顺向走</b>，沿途景点密集，不走回头路。观光车可选段乘坐。</li>
+              <li><b>必玩亮点排序</b>：① 卧龙潭（最美水体，蓝绿色如翡翠）② 鸳鸯湖（划船穿行水上迷宫，¥30/船）③ 水上森林（树长在水中，独特奇观）④ 68级跌水瀑布（层层叠叠如阶梯）⑤ 小七孔古桥（景区标志，最佳拍摄点）⑥ 拉雅瀑布（紧挨古桥，水雾扑面）。</li>
+              <li><b>鸳鸯湖划船是隐藏玩法</b>，手动划船穿行水上树丛迷宫，约 40min，强烈推荐！</li>
+              <li>水上森林段需脱鞋或穿凉鞋涉水（水深及踝），穿运动鞋需绕行栈道。</li>
+              <li>景区内只有卧龙潭附近有餐厅（人均 ¥50），建议自带干粮和水。</li>
+              <li>夏季可带泳衣，部分浅水区可玩水；禁止在深水区游泳。</li>
+            </ul></div>
+          </div>
+          <div class="stop">
+            <div class="time">12:00 – 13:00</div>
+            <div class="name">🍜 午餐 · 景区内简餐/自带干粮</div>
+            <div class="desc">卧龙潭附近有简餐点，人均 ¥40–50。推荐自带干粮+水，在鸳鸯湖或水上森林附近野餐更惬意。荔波特色：荔波酸肉、荔波鱼、杨梅汤。</div>
+          </div>
+          <div class="stop">
+            <div class="time">17:30 – 18:30</div>
+            <div class="name">🚐 荔波景区 → 荔波县城</div>
+            <div class="desc">出景区后包车至荔波县城（约 30km / 40min），入住酒店休息。荔波县城小巧干净，樟江穿城而过，傍晚沿江散步很惬意。</div>
+            <div class="drive">🚐 小七孔景区 → 荔波县城：约 30km / 40min</div>
+          </div>
+          <div class="stop">
+            <div class="time">18:30 – 20:00</div>
+            <div class="name">🍜 晚餐 · 荔波县城美食</div>
+            <div class="desc">荔波特色美食：荔波酸肉（发酵酸肉，口味独特）、樟江鱼、荔波烤香猪、豆花烤鱼。推荐樟江美食街，人均 ¥60–100。</div>
+            <div class="tips"><div class="t-head">⚡ 避坑贴士</div><ul>
+              <li>荔波酸肉是布依族特色发酵食品，口味较重，肠胃弱者慎试。</li>
+              <li>樟江鱼是本地河鱼，清蒸或酸汤做法都鲜美，推荐尝试。</li>
+            </ul></div>
+          </div>
+        </div>
+        <div class="stay"><div class="s-head">🏨 当日住宿 · 荔波县城</div>
+          <div class="stay-opt"><span class="tag mid">中档</span><span class="nm">荔波樟江部落酒店 / 荔波三力酒店</span><a data-pt="hotel-libo">📍地图定位</a><span class="dt">📍荔波县城中心，樟江边，步行至美食街约 5 分钟，距小七孔景区 30km</span></div>
+          <div class="stay-note">💡 荔波县城住宿选择多、性价比高，比住景区门口便宜。樟江边晚上凉风习习，适合散步消食。次日从荔波到西江苗寨约 200km/3h。</div>
+        </div>
+        <div class="hl">🎯 本日亮点：世界遗产"绿宝石"深度游 + 鸳鸯湖划船 + 水上森林涉水 + 卧龙潭翡翠水</div>
+        <div class="day-budget">💰 本日预算：人均约 ¥450（票 ¥170 + 餐 ¥100 + 包车分摊 + 住宿分摊）</div>
+      </div>
+    </div>
+
+    <!-- DAY 4 -->
+    <div class="day">
+      <div class="day-head" style="background:linear-gradient(90deg,#f97316,#fb923c)">
+        <span class="tag">Day 4</span>
+        <h2>苗岭风情 · 千户苗寨</h2>
+        <span class="meta">🚐 约 200km 包车 · 民族文化体验</span>
+      </div>
+      <div class="day-body">
+        <div class="tl">
+          <div class="stop">
+            <div class="time">07:30 – 10:30</div>
+            <div class="name">🚐 荔波 → 西江千户苗寨</div>
+            <div class="desc">包车从荔波出发，经三都/雷山约 200km / 3h 到西江千户苗寨。沿途穿越黔东南苗岭山脉，梯田、苗寨散布山间，风景如画。</div>
+            <div class="drive">🚐 荔波 → 西江千户苗寨：约 200km / 3h（经三都、雷山北行）</div>
+            <div class="tips"><div class="t-head">⚡ 避坑贴士</div><ul>
+              <li><b>西江千户苗寨门票 ¥110（含 4 次观光车），需在"西江千户苗寨"官方公众号预约</b>，旺季提前 2 天。</li>
+              <li>苗寨位于雷山县，海拔约 1200m，夏季比贵阳还凉爽。</li>
+              <li>景区大门到寨子核心区有观光车（含在门票内），<b>建议坐观光车到观景台附近下车</b>，再步行下山游览。</li>
+            </ul></div>
+          </div>
+          <div class="stop">
+            <div class="time">10:30 – 12:00</div>
+            <div class="name">🏔️ 西江观景台 · 俯瞰千户苗寨 <a data-pt="xijiang-view">📍地图定位</a></div>
+            <div class="desc">西江千户苗寨是中国最大的苗族聚居村寨，1400 余户、6000 余人。观景台可俯瞰整个苗寨层叠吊脚楼全景，是最佳拍摄点。白天看炊烟袅袅，夜晚看万家灯火。</div>
+            <div class="tips"><div class="t-head">⚡ 避坑贴士</div><ul>
+              <li>观景台上午顺光，适合拍全景；下午逆光但炊烟效果更佳。</li>
+              <li>观景台有免费望远镜；观光车上下山 ¥5/次（4 次含在门票内）。</li>
+            </ul></div>
+          </div>
+          <div class="stop">
+            <div class="time">12:00 – 13:30</div>
+            <div class="name">🍜 午餐 · 苗家酸汤鱼长桌宴</div>
+            <div class="desc">西江最具特色的用餐体验：长桌宴。苗族阿妹唱敬酒歌、跳敬酒舞，"高山流水"敬酒仪式感满满。酸汤鱼是必吃（用发酵米汤/番茄汤底煮江团鱼），配苗家腊肉、糯米饭。人均 ¥80–120。</div>
+            <div class="tips"><div class="t-head">⚡ 避坑贴士</div><ul>
+              <li><b>长桌宴推荐在寨内农家乐体验</b>，比入口处商业餐厅更地道；"侯家庄""阿浓苗家"口碑好。</li>
+              <li>"高山流水"敬酒是苗族最高礼节，酒量不佳提前说明，阿妹不会强灌。</li>
+              <li>酸汤鱼选"白酸汤"（米汤发酵）或"红酸汤"（番茄发酵），红酸汤更浓更下饭。</li>
+            </ul></div>
+          </div>
+          <div class="stop">
+            <div class="time">13:30 – 17:30</div>
+            <div class="name">🏚️ 苗寨深度游览 <a data-pt="xijiang">📍地图定位</a></div>
+            <div class="desc">推荐路线：观景台 → 嘎歌古巷（苗语"嘎歌"意为小巷）→ 苗族博物馆（了解苗族历史、服饰、银饰文化）→ 鼓藏头家（苗王住所）→ 田园风光区 → 风雨桥（共有 7 座，依次下行）→ 白岩河畔漫步。全程步行约 3–4h。</div>
+            <div class="tips"><div class="t-head">⚡ 避坑贴士</div><ul>
+              <li><b>苗族博物馆值得花 1h 仔细看</b>，了解苗族迁徙史、服饰银饰文化，否则苗寨只看建筑会浅。</li>
+              <li>嘎歌古巷内有苗族非遗体验：蜡染、银饰锻造、苗绣，可亲手体验（¥30–50/项）。</li>
+              <li>风雨桥从 1 号到 7 号依次排列，沿河下行不用爬坡，最省力。</li>
+              <li>寨内石板路湿滑，穿防滑鞋；吊脚楼多为木质，禁止吸烟。</li>
+              <li>下午 15:00 寨内小广场有苗族歌舞表演（含在门票内），值得看。</li>
+            </ul></div>
+          </div>
+          <div class="stop">
+            <div class="time">17:30 – 19:00</div>
+            <div class="name">🌆 苗寨黄昏 · 华灯初上</div>
+            <div class="desc">傍晚是西江最美时刻。建议 17:30 前回到观景台占位，看夕阳余晖下吊脚楼群渐次亮灯，万家灯火如星河铺满山谷，极为震撼。18:30–19:00 是最佳亮灯拍摄时间。</div>
+            <div class="tips"><div class="t-head">⚡ 避坑贴士</div><ul>
+              <li><b>观景台 17:30 就要去占位</b>，旺季人山人海，晚到只能看到人头。</li>
+              <li>亮灯时间约 18:30–19:00（随季节调整），持续到 22:00。</li>
+              <li>带三脚架拍夜景更稳；手机夜景模式也可出片。</li>
+            </ul></div>
+          </div>
+          <div class="stop">
+            <div class="time">19:00 – 21:00</div>
+            <div class="name">🍜 晚餐 · 苗寨夜景漫步</div>
+            <div class="desc">苗寨夜晚灯火通明，沿白岩河漫步看吊脚楼倒影。晚餐推荐苗家烧烤、糯米饭、苗家米酒。夜晚的苗寨比白天更美，值得慢慢逛。</div>
+          </div>
+        </div>
+        <div class="stay"><div class="s-head">🏨 当日住宿 · 西江苗寨内</div>
+          <div class="stay-opt"><span class="tag hi">高档</span><span class="nm">西江云亭精品客栈 / 西江三春里·孟客栈</span><a data-pt="hotel-xijiang">📍地图定位</a><span class="dt">📍苗寨内半山观景客栈，推窗即见万家灯火，位置绝佳</span></div>
+          <div class="stay-note">💡 <b>强烈建议住苗寨内</b>而非景区外！夜晚万家灯火和清晨无游客的静谧苗寨是两大绝佳体验，住寨内才能两全。选半山观景房，推窗就是吊脚楼全景。行李可由客栈电瓶车接驳上山。</div>
+        </div>
+        <div class="hl">🎯 本日亮点：千户苗寨全景 + 长桌宴高山流水敬酒 + 苗族非遗体验 + 夜晚万家灯火</div>
+        <div class="day-budget">💰 本日预算：人均约 ¥520（票 ¥110 + 餐 ¥130 + 长桌宴 ¥80 + 包车分摊 + 住宿分摊）</div>
+      </div>
+    </div>
+
+    <!-- DAY 5 -->
+    <div class="day">
+      <div class="day-head" style="background:linear-gradient(90deg,#ec4899,#f472b6)">
+        <span class="tag">Day 5</span>
+        <h2>古镇水韵 · 镇远慢游</h2>
+        <span class="meta">🚐 约 180km 包车 · 古城慢生活</span>
+      </div>
+      <div class="day-body">
+        <div class="tl">
+          <div class="stop">
+            <div class="time">06:30 – 08:00</div>
+            <div class="name">🌅 苗寨晨景 · 无人的宁静</div>
+            <div class="desc">早起是西江的另一面：游客未至，苗寨炊烟袅袅，晨雾缭绕吊脚楼间。观景台拍晨雾全景，或沿风雨桥漫步，享受宁静的苗寨。这是住寨内的最大福利。</div>
+            <div class="tips"><div class="t-head">⚡ 避坑贴士</div><ul>
+              <li><b>06:30–08:00 是苗寨最安静的时间</b>，8:30 后大团涌入就热闹了，住寨内务必早起享受。</li>
+              <li>晨雾在 6:30–7:30 最浓，观景台拍云雾中的苗寨如仙境。</li>
+            </ul></div>
+          </div>
+          <div class="stop">
+            <div class="time">08:30 – 11:00</div>
+            <div class="name">🚐 西江 → 镇远古镇</div>
+            <div class="desc">包车从西江出发，经凯里/施秉约 180km / 2.5h 到镇远古镇。沿途穿越黔东南山区，苗族侗族村寨散布公路两侧。</div>
+            <div class="drive">🚐 西江千户苗寨 → 镇远古镇：约 180km / 2.5h（经凯里、施秉北行）</div>
+          </div>
+          <div class="stop">
+            <div class="time">11:00 – 12:30</div>
+            <div class="name">🍜 午餐 · 镇远道菜</div>
+            <div class="desc">镇远特色美食：陈年道菜（腌制青菜，古镇招牌）、酸汤鱼、镇远红酸汤、苗伯妈酸汤。推荐顺城街老字号，人均 ¥50–80。</div>
+            <div class="tips"><div class="t-head">⚡ 避坑贴士</div><ul>
+              <li>"陈年道菜"是镇远非遗美食，用本地青菜腌制 1–3 年，口感咸鲜微酸，是佐餐佳品。</li>
+              <li>镇远红酸汤与凯里白酸汤不同，用番茄+辣椒发酵，更浓郁。</li>
+            </ul></div>
+          </div>
+          <div class="stop">
+            <div class="time">12:30 – 15:30</div>
+            <div class="name">🏯 镇远古城 · 青龙洞古建筑群 <span class="chip">门票 ¥60</span><a data-pt="zhenyuan">📍地图定位</a></div>
+            <div class="desc">镇远古镇 2000 余年历史，舞阳河呈 S 形穿城而过，形似太极图。青龙洞古建筑群是西南地区最大的贴崖古建筑群，儒释道三教合一，悬空建于中河山崖壁上，极为壮观。游览约 2–3h。</div>
+            <div class="tips"><div class="t-head">⚡ 避坑贴士</div><ul>
+              <li><b>青龙洞是镇远必看</b>，三教合一的贴崖建筑全国罕见，登最高处万寿宫可俯瞰舞阳河 S 形太极全景。</li>
+              <li>古镇免费进入，仅青龙洞收 ¥60；古巷道（仁寿巷、冲子口巷、紫霄洞巷）免费漫步。</li>
+              <li>古巷道是镇远精华，石板路+马头墙+老宅院，比主街更原生态，人少出片。</li>
+              <li>镇远"歪门斜道"——古巷道门不朝正方向开，是风水讲究，留意观察很有趣。</li>
+            </ul></div>
+          </div>
+          <div class="stop">
+            <div class="time">15:30 – 17:30</div>
+            <div class="name">🚢 舞阳河游船 <span class="chip">船票 ¥140</span><a data-pt="wuyanghe">📍地图定位</a></div>
+            <div class="desc">舞阳河是镇远灵魂，S 形河道将古镇分为北岸府城、南岸卫城。乘船游舞阳河，看两岸古建吊脚楼倒映水中，约 1h。也可沿河散步免费欣赏。</div>
+            <div class="tips"><div class="t-head">⚡ 避坑贴士</div><ul>
+              <li>游船 ¥140/人，旺季排队 30min+；时间紧可沿河步道散步免费看，视角也很好。</li>
+              <li>傍晚 17:00 后光线柔和，河面倒影最美，适合拍照。</li>
+            </ul></div>
+          </div>
+          <div class="stop">
+            <div class="time">18:00 – 21:00</div>
+            <div class="name">🌃 镇远古城夜景 <span class="chip">免费</span><a data-pt="zhenyuan-night">📍地图定位</a></div>
+            <div class="desc">镇远夜景是贵州一绝：舞阳河两岸古建灯火通明，倒映河面如梦似幻。沿河散步、坐河边喝茶、吃夜宵，感受 2000 年古城的慢生活。推荐祝圣桥（老大桥）拍夜景最佳。</div>
+            <div class="tips"><div class="t-head">⚡ 避坑贴士</div><ul>
+              <li><b>祝圣桥是拍夜景最佳机位</b>，桥上可拍舞阳河两岸灯火全景。</li>
+              <li>河边茶馆 ¥30–50/壶茶，坐一晚看夜景发呆是镇远最佳体验。</li>
+              <li>镇远夜市在民主街一带，烤鱼、烤豆腐、米豆腐值得尝。</li>
+            </ul></div>
+          </div>
+        </div>
+        <div class="stay"><div class="s-head">🏨 当日住宿 · 镇远古城内</div>
+          <div class="stay-opt"><span class="tag mid">中档</span><span class="nm">镇远府城宾馆 / 镇远舞阳河畔精品客栈</span><a data-pt="hotel-zhenyuan">📍地图定位</a><span class="dt">📍古城内舞阳河畔，推窗见河景，步行至青龙洞/祝圣桥约 5 分钟</span></div>
+          <div class="stay-note">💡 <b>务必住古城内</b>，河畔房推窗即见舞阳河夜景，晚上沿河散步、喝茶、吃夜宵最方便。镇远古城比丽江、凤凰商业化程度低很多，更有古镇味道。次日从镇远回贵阳约 280km/3.5h。</div>
+        </div>
+        <div class="hl">🎯 本日亮点：苗寨晨雾 + 2000 年古城 + 青龙洞贴崖奇观 + 舞阳河太极 S 湾夜景</div>
+        <div class="day-budget">💰 本日预算：人均约 ¥430（票 ¥60 + 船 ¥140 + 餐 ¥80 + 包车分摊 + 住宿分摊）</div>
+      </div>
+    </div>
+
+    <!-- DAY 6 -->
+    <div class="day">
+      <div class="day-head" style="background:linear-gradient(90deg,#8b5cf6,#a78bfa)">
+        <span class="tag">Day 6</span>
+        <h2>黔灵收官 · 满载返程</h2>
+        <span class="meta">🚐 约 280km 包车 · 含贵阳飞南京</span>
+      </div>
+      <div class="day-body">
+        <div class="tl">
+          <div class="stop">
+            <div class="time">07:30 – 11:00</div>
+            <div class="name">🚐 镇远 → 贵阳</div>
+            <div class="desc">包车从镇远出发，经沪昆高速约 280km / 3.5h 返回贵阳。建议 7:30 出发，11:00 到贵阳市区。沿途穿越黔东山区，风景秀丽。</div>
+            <div class="drive">🚐 镇远古镇 → 贵阳市区：约 280km / 3.5h（经沪昆高速西行）</div>
+            <div class="tips"><div class="t-head">⚡ 避坑贴士</div><ul>
+              <li>镇远回贵阳全程高速，但山区路段弯多，有晕车史备好晕车药。</li>
+              <li>若返程航班在 15:00 前，可从镇远坐高铁（镇远站→贵阳北，约 1.5h），比包车快 2h。</li>
+            </ul></div>
+          </div>
+          <div class="stop">
+            <div class="time">11:00 – 12:30</div>
+            <div class="name">🍜 午餐 · 贵阳特色收尾餐</div>
+            <div class="desc">最后一顿贵州美食收尾！推荐：花溪牛肉粉（"花溪王记"总店）、肠旺面（"南门口肠旺面"）、烙锅（贵州铁板烧）。人均 ¥30–50。</div>
+            <div class="tips"><div class="t-head">⚡ 避坑贴士</div><ul>
+              <li>花溪牛肉粉是贵州名片，汤底用黄牛骨熬制，必吃！</li>
+              <li>烙锅是六盘水/毕节特色，铁板上烙各种肉类蔬菜，蘸辣椒面，人均 ¥40。</li>
+              <li>想带特产：老干妈（贵阳产）、波波糖（镇宁）、牛肉干（黄果树）、茶叶（都匀毛尖/湄潭翠芽）。</li>
+            </ul></div>
+          </div>
+          <div class="stop">
+            <div class="time">12:30 – 15:00</div>
+            <div class="name">🛍️ 贵阳特产采购 · 二七路/超市</div>
+            <div class="desc">最后时间采购贵州特产：老干妈辣椒酱、波波糖、牛肉干、都匀毛尖茶、刺梨干/刺梨汁（维C之王）、贵州茅台（如有预算）。大型超市（沃尔玛/永辉）比景区便宜很多。</div>
+            <div class="tips"><div class="t-head">⚡ 避坑贴士</div><ul>
+              <li>老干妈在贵阳超市买最便宜（¥9–12/瓶），比其他城市便宜 30%。</li>
+              <li>刺梨干/刺梨汁是贵州特产，维C含量极高，适合当伴手礼。</li>
+              <li>波波糖选镇宁产的正宗，酥脆香甜，¥15–25/盒。</li>
+            </ul></div>
+          </div>
+          <div class="stop">
+            <div class="time">15:30 – 16:30</div>
+            <div class="name">🚐 贵阳市区 → 龙洞堡机场 <a data-pt="airport-back">📍地图定位</a></div>
+            <div class="desc">包车从市区到龙洞堡机场约 11km / 25min。建议起飞前 2h 到达机场，国内航班提前 1.5h 值机。</div>
+            <div class="drive">🚐 贵阳市区 → 龙洞堡机场：约 11km / 25min</div>
+          </div>
+          <div class="stop">
+            <div class="time">17:00 – 19:30</div>
+            <div class="name">✈️ 贵阳龙洞堡 → 南京禄口</div>
+            <div class="desc">搭乘下午/晚间直达航班返宁（如东方航空 MU2766 17:00→19:30 / 深圳航空 ZH9554 等班次，请以购票平台实时为准，优选 17:00 后起飞班次最大化当日游玩）。飞行约 2 小时 30 分。</div>
+            <div class="tips"><div class="t-head">⚡ 避坑贴士</div><ul>
+              <li>龙洞堡机场有茅台酒专卖店，比市区便宜且保真，想带茅台的在此购买（限购 2 瓶）。</li>
+              <li>贵阳到南京禄口有多个直达航班，建议提前 15 天以上购票更便宜；优选 17:00 后起飞班次，上午还能逛贵阳。</li>
+              <li>机场大巴从市区喷水池始发，¥20/人，约 30min 到机场；打车约 ¥50–60。</li>
+              <li>南京禄口落地后地铁 S1 号线直达南京南站，约 35min；若深夜落地可预约接机专车。</li>
+            </ul></div>
+          </div>
+        </div>
+        <div class="hl">🎯 本日亮点：贵州美食收官 + 特产采购 + 满载而归，下午航班上午还能逛贵阳</div>
+        <div class="day-budget">💰 本日预算：人均约 ¥520（包车分摊 + 餐 + 特产 + 机票分摊）</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- BOTTOM PANELS -->
+<div class="bottom">
+
+  <div class="panel">
+    <h3>🎒 完整出行准备清单</h3>
+    <div class="grid2">
+      <div class="checklist">
+        <div class="grp">证件类</div>
+        <label><input type="checkbox"> 身份证（景区实名入园必备）</label>
+        <label><input type="checkbox"> 驾驶证（如自驾）/ 包车司机联系方式</label>
+        <label><input type="checkbox"> 机票行程单电子版、酒店预订单截图</label>
+        <div class="grp">衣物类（贵州夏季）</div>
+        <label><input type="checkbox"> 速干短袖 3–4 件 + 防晒外套（山区早晚凉）</label>
+        <label><input type="checkbox"> 薄冲锋衣/长袖（荔波/西江/镇远早晚 18–22℃）</label>
+        <label><input type="checkbox"> 防滑徒步鞋（黄果树/小七孔栈道湿滑）+ 凉鞋/拖鞋</label>
+        <label><input type="checkbox"> 遮阳帽、墨镜、防晒口罩</label>
+        <label><input type="checkbox"> 泳衣（小七孔可玩水）+ 雨衣（瀑布水雾大）</label>
+      </div>
+      <div class="checklist">
+        <div class="grp">药品 & 健康</div>
+        <label><input type="checkbox"> 晕车药（贵州多山路弯道）</label>
+        <label><input type="checkbox"> 肠胃药（酸辣饮食需适应）</label>
+        <label><input type="checkbox"> 感冒药、创可贴、驱蚊液</label>
+        <label><input type="checkbox"> 葡萄糖/巧克力（徒步补充体力）</label>
+        <div class="grp">电子 & 其他</div>
+        <label><input type="checkbox"> 充电宝（景区耗电快）、防水手机袋</label>
+        <label><input type="checkbox"> 雨衣/折叠伞（贵州多阵雨，"天无三日晴"）</label>
+        <label><input type="checkbox"> 保温杯、湿巾、纸巾</label>
+        <label><input type="checkbox"> 少量现金（山区信号偶有不稳）</label>
+        <label><input type="checkbox"> 防水袋（黄果树水帘洞/小七孔水上森林用）</label>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h3>💡 全程旅游建议 & 避坑总览</h3>
+    <div class="tips-grid">
+      <div class="tip-card"><h4>🎫 预约必做清单</h4><p>黄果树瀑布（提前 3 天）、荔波小七孔（提前 3 天）、西江千户苗寨（提前 2 天）、青龙洞（现场购票）。7–8 月旺季务必提前抢票，现场可能无票。均在官方微信公众号预约。</p></div>
+      <div class="tip-card"><h4>🚗 全程包车注意事项</h4><p>贵州景点分散（景点间车程 2–4h），<b>包车是最优选择</b>。签正规合同、确认含司机食宿与过路费；山路弯多，选有经验的本地司机；全程包车 5 天约 ¥2500–3500（5 座车），三人出行人均约 ¥900。也可自驾但山路需谨慎。</p></div>
+      <div class="tip-card"><h4>🌶️ 美食避雷</h4><p>贵州菜偏酸辣，"三天不吃酸，走路打蹿蹿"。必吃：酸汤鱼、肠旺面、花溪牛肉粉、丝娃娃、烙锅、折耳根。肠胃弱者逐步适应辣度；折耳根（鱼腥草）口味独特，不习惯可跳过。景区内小吃溢价高，钻小巷/县城更地道。</p></div>
+      <div class="tip-card"><h4>📱 推荐 App</h4><p>高德/百度地图（导航+实时路况）、12306/携程（机酒高铁）、大众点评（餐厅排队取号）、各景区官方公众号（预约购票）、墨迹天气（山区阵雨预警）。贵州山区信号偶有盲区，提前下载离线地图。</p></div>
+      <div class="tip-card altai"><h4>⛰️ 地形与海拔</h4><p>贵州属云贵高原，海拔 500–1500m，<b>一般无高反风险</b>。但喀斯特地貌多山路弯道，晕车者备药；黄果树/小七孔景区步行量大，体力消耗大，量力而行。荔波/西江/镇远海拔约 1000–1200m，气候凉爽。</p></div>
+      <div class="tip-card"><h4>🌧️ 天气与穿搭</h4><p>贵州"天无三日晴"，7–8 月多阵雨但来去快。贵阳/安顺 22–28℃，荔波/西江 25–32℃。穿搭"短袖+防晒外套+薄长袖"叠穿，雨具随身。山区紫外线强，防晒 SPF50+。黄果树水帘洞、小七孔水上森林需防水装备。</p></div>
+      <div class="tip-card"><h4>💰 预算总览（人均）</h4><p>南京⇌贵阳机票往返 ¥1400–2600｜全程包车（5天5座车）人均约 ¥900｜住宿 5 晚 ¥700–1400｜门票+船票 ¥530｜餐饮 ¥500–800｜特产 ¥200–500｜其他 ¥200｜合计约 ¥3800–5500。丰俭由人。</p></div>
+      <div class="tip-card"><h4>🚗 交通与车程提示</h4><p>全程以包车/自驾为主，景点间车程 2–4h 不等。核心路线：贵阳→黄果树(130km/2h)→荔波(250km/3.5h)→西江(200km/3h)→镇远(180km/2.5h)→贵阳(280km/3.5h)。全程约 1040km，5 天车程。也可选择贵阳⇌凯里高铁段+包车组合。</p></div>
+      <div class="tip-card"><h4>🏛️ 文化体验提示</h4><p>西江苗寨、镇远古镇是民族文化体验核心。苗族长桌宴"高山流水"敬酒是最高礼节，量力而行；苗族蜡染、银饰锻造可亲手体验；镇远古城三教合一文化独特。尊重当地习俗，拍照前征得同意。</p></div>
+      <div class="tip-card"><h4>📸 最佳出片机位</h4><p>① 黄果树犀牛潭彩虹（下午15–17点）② 荔波卧龙潭翡翠水 ③ 小七孔古桥+拉雅瀑布 ④ 西江观景台万家灯火 ⑤ 西江观景台晨雾 ⑥ 镇远祝圣桥夜景 ⑦ 青岩背街石板巷 ⑧ 甲秀楼夜景。带三脚架拍夜景更稳。</p></div>
+    </div>
+  </div>
+
+  <div class="disclaimer">⚠️ 以上信息基于公开资料整理（2025–2026），实际票价、预约政策、航班时刻以各景区/航司/平台官方发布为准，出行前请二次核实。</div>
+</div>
+
+<script>
+// ====== MAP ======
+const map = L.map('map',{scrollWheelZoom:true,zoomControl:true,attributionControl:true}).setView([26.8,107.5],8);
+
+// 高德浅色中文底图（免密钥瓦片）
+L.tileLayer('https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}',{
+  subdomains:['1','2','3','4'],maxZoom:17,attribution:'© Amap'
+}).addTo(map);
+
+// 点位数据
+const PTS = {
+  'airport-go':       {ll:[26.538,106.801], name:'贵阳龙洞堡机场（南京飞抵）', type:'airport', day:'Day1 起点 · 南京禄口07:30→10:00', alt:'海拔约1100m'},
+  'qingyan':          {ll:[26.416,106.681], name:'青岩古镇', type:'spot', day:'Day1', alt:'海拔约1060m'},
+  'qianlingshan':     {ll:[26.593,106.692], name:'黔灵山公园', type:'spot', day:'Day1', alt:'海拔约1100m'},
+  'jiaxiu':           {ll:[26.568,106.717], name:'甲秀楼 / 二七路美食街', type:'spot', day:'Day1', alt:'海拔约1100m'},
+  'huangguoshu':      {ll:[25.996,105.678], name:'黄果树大瀑布', type:'spot', day:'Day2', alt:'海拔约860m'},
+  'doupotang':        {ll:[26.013,105.655], name:'陡坡塘瀑布', type:'spot', day:'Day2', alt:'海拔约860m'},
+  'tianxingqiao':     {ll:[26.017,105.650], name:'天星桥景区', type:'spot', day:'Day2', alt:'海拔约860m'},
+  'libo':             {ll:[25.257,107.725], name:'荔波小七孔景区', type:'spot', day:'Day3', alt:'海拔约430m'},
+  'xijiang':          {ll:[26.383,108.315], name:'西江千户苗寨', type:'spot', day:'Day4', alt:'海拔约1200m'},
+  'xijiang-view':     {ll:[26.388,108.318], name:'西江观景台', type:'spot', day:'Day4', alt:'海拔约1250m'},
+  'zhenyuan':         {ll:[27.048,108.421], name:'镇远古镇 / 青龙洞', type:'spot', day:'Day5', alt:'海拔约460m'},
+  'wuyanghe':         {ll:[27.050,108.420], name:'舞阳河游船码头', type:'spot', day:'Day5', alt:'海拔约460m'},
+  'zhenyuan-night':   {ll:[27.049,108.423], name:'镇远古城夜景（祝圣桥）', type:'spot', day:'Day5', alt:'海拔约460m'},
+  'airport-back':     {ll:[26.538,106.801], name:'贵阳龙洞堡机场（返南京）', type:'airport', day:'Day6 终点 · 贵阳17:00→19:30南京', alt:'海拔约1100m'},
+  'hotel-guiyang':    {ll:[26.565,106.710], name:'贵阳市区酒店（喷水池）', type:'hotel', day:'Day1 住宿', alt:'海拔约1100m'},
+  'hotel-anshun':     {ll:[26.246,105.930], name:'安顺市区酒店', type:'hotel', day:'Day2 住宿', alt:'海拔约1300m'},
+  'hotel-libo':       {ll:[25.412,107.885], name:'荔波县城酒店', type:'hotel', day:'Day3 住宿', alt:'海拔约430m'},
+  'hotel-xijiang':    {ll:[26.385,108.316], name:'西江苗寨内客栈', type:'hotel', day:'Day4 住宿', alt:'海拔约1200m'},
+  'hotel-zhenyuan':   {ll:[27.050,108.420], name:'镇远古城内客栈', type:'hotel', day:'Day5 住宿', alt:'海拔约460m'}
+};
+
+const icon = (c)=>L.divIcon({className:'',html:`<div style="width:18px;height:18px;border-radius:50%;background:${c};border:3px solid #fff;box-shadow:0 0 0 2px ${c},0 2px 6px rgba(0,0,0,.4)"></div>`,iconSize:[18,18],iconAnchor:[9,9]});
+const stayIcon = L.divIcon({className:'',html:'<div style="font-size:20px">🏨</div>',iconSize:[24,24],iconAnchor:[12,12]});
+
+const markers = {};
+Object.entries(PTS).forEach(([k,v])=>{
+  let m;
+  if(v.type==='hotel'){
+    m = L.marker(v.ll,{icon:stayIcon}).addTo(map);
+    m.bindPopup(`<div class="marker-pop"><b>🏨 ${v.name}</b><br>📍 海拔 <b style="color:#f97316">${v.alt||'—'}</b><br>${v.day}</div>`);
+  } else {
+    const col = v.type==='airport' ? '#ef4444' : '#0ea5e9';
+    m = L.marker(v.ll,{icon:icon(col)}).addTo(map);
+    m.bindPopup(`<div class="marker-pop"><b>${v.name}</b><br>📍 海拔 <b style="color:#f97316">${v.alt||'—'}</b><br>${v.day}</div>`);
+  }
+  markers[k]=m;
+});
+
+// 路线连线（按天着色）
+const ROUTES = [
+  {color:'#10b981', pts:[['airport-go'],['qingyan'],['qianlingshan'],['jiaxiu']]},                                    // D1: 机场→青岩→黔灵山→甲秀楼
+  {color:'#0ea5e9', pts:[['jiaxiu'],['doupotang'],['tianxingqiao'],['huangguoshu']]},                                  // D2: 贵阳→黄果树三景区
+  {color:'#10b981', pts:[['huangguoshu'],['libo']]},                                                                  // D3: 黄果树→荔波
+  {color:'#f97316', pts:[['libo'],['xijiang-view'],['xijiang']]},                                                      // D4: 荔波→西江
+  {color:'#ec4899', pts:[['xijiang'],['zhenyuan'],['wuyanghe'],['zhenyuan-night']]},                                   // D5: 西江→镇远
+  {color:'#8b5cf6', pts:[['zhenyuan-night'],['airport-back']]}                                                         // D6: 镇远→贵阳机场
+];
+ROUTES.forEach(r=>{
+  const latlngs = r.pts.map(p=> Array.isArray(p)&&typeof p[0]==='string' ? PTS[p[0]].ll : p);
+  L.polyline(latlngs,{color:r.color,weight:3.5,opacity:.8,dashArray: null}).addTo(map);
+});
+
+// 里程标注
+const DIST = [
+  {from:[26.538,106.801],to:[26.416,106.681],txt:'35km'},
+  {from:[26.416,106.681],to:[26.568,106.717],txt:'30km'},
+  {from:[26.568,106.717],to:[26.013,105.655],txt:'130km'},
+  {from:[26.013,105.655],to:[25.996,105.678],txt:'观光车'},
+  {from:[25.996,105.678],to:[25.257,107.725],txt:'250km/3.5h'},
+  {from:[25.257,107.725],to:[26.383,108.315],txt:'200km/3h'},
+  {from:[26.383,108.315],to:[27.048,108.421],txt:'180km/2.5h'},
+  {from:[27.048,108.421],to:[26.538,106.801],txt:'280km/3.5h'}
+];
+DIST.forEach(d=>{
+  const mid=[(d.from[0]+d.to[0])/2,(d.from[1]+d.to[1])/2];
+  L.marker(mid,{icon:L.divIcon({className:'',html:`<div style="background:#fff;border:1px solid #f97316;color:#f97316;font-size:11px;font-weight:700;padding:1px 6px;border-radius:10px;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.2)">${d.txt}</div>`,iconSize:[60,16],iconAnchor:[30,8]})}).addTo(map);
+});
+
+// 点击右侧"地图定位"联动
+document.querySelectorAll('[data-pt]').forEach(el=>{
+  const k = el.getAttribute('data-pt');
+  const v = PTS[k];
+  // 自动注入海拔标签
+  if(v && v.alt){
+    const tag=document.createElement('span');
+    tag.className='chip';
+    tag.style.cssText='background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;font-weight:600';
+    tag.textContent='⛰️ 海拔 '+v.alt;
+    el.parentNode.insertBefore(tag, el.nextSibling);
+  }
+  el.addEventListener('click',e=>{
+    e.preventDefault();
+    const k = el.getAttribute('data-pt');
+    const v = PTS[k];
+    if(!v) return;
+    map.flyTo(v.ll, 11, {duration:1.2});
+    setTimeout(()=>{ markers[k] && markers[k].openPopup(); }, 1300);
+    el.style.color='#f97316';
+  });
+});
+
+// 适配高度（flex 容器需多次校正 + 监听尺寸变化）
+const _mapEl = document.getElementById('map');
+setTimeout(()=>map.invalidateSize(),300);
+setTimeout(()=>map.invalidateSize(),800);
+if(window.ResizeObserver){
+  new ResizeObserver(()=>map.invalidateSize()).observe(_mapEl);
+}
+window.addEventListener('resize',()=>map.invalidateSize());
+</script>
+</body>
+</html>

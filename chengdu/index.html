@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<title>南京→成都→九寨沟及周边6天5晚私家游行程</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  :root{
+    --bg:#f6f7f9; --card:#ffffff; --ink:#1f2937; --sub:#6b7280; --line:#e5e7eb;
+    --brand:#0ea5e9; --brand-d:#0369a1; --accent:#f97316; --green:#10b981; --red:#ef4444; --gold:#eab308;
+    --d1:#0ea5e9; --d2:#8b5cf6; --d3:#10b981; --d4:#f97316; --d5:#ec4899; --d6:#0284c7;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"PingFang SC","Microsoft YaHei",system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+  /* header */
+  header{background:linear-gradient(135deg,#0ea5e9 0%,#0369a1 100%);color:#fff;padding:22px 28px}
+  header h1{font-size:22px;font-weight:700;letter-spacing:.5px}
+  header .sub{font-size:13px;opacity:.92;margin-top:5px}
+  .flight-bar{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px}
+  .flight-card{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.25);border-radius:10px;padding:9px 13px;font-size:12.5px;backdrop-filter:blur(4px)}
+  .flight-card b{font-size:14px}
+  /* layout */
+  .wrap{display:flex;gap:16px;padding:16px;max-width:1500px;margin:0 auto}
+  .map-col{flex:0 0 46%;position:sticky;top:14px;align-self:flex-start;height:calc(100vh - 28px);display:flex;flex-direction:column;gap:8px}
+  .itin-col{flex:1;min-width:0}
+  .map-title{flex:none;background:rgba(255,255,255,.94);border-radius:10px;padding:8px 12px;font-size:12.5px;font-weight:600;box-shadow:0 2px 10px rgba(0,0,0,.12);text-align:center}
+  #map{width:100%;flex:1 1 auto;min-height:300px;border-radius:14px;box-shadow:0 4px 18px rgba(0,0,0,.08);border:1px solid var(--line);background:#e8eaed}
+  .map-legend{flex:none;background:rgba(255,255,255,.94);border-radius:10px;padding:9px 12px;font-size:11.5px;box-shadow:0 2px 10px rgba(0,0,0,.12);display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center}
+  .map-legend .lg{display:flex;align-items:center;gap:6px}
+  .map-legend .dot{width:11px;height:11px;border-radius:50%}
+  /* day card */
+  .day{background:var(--card);border-radius:14px;margin-bottom:16px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.05);border:1px solid var(--line)}
+  .day-head{padding:14px 18px;color:#fff;display:flex;align-items:center;gap:10px;cursor:pointer}
+  .day-head .tag{background:rgba(255,255,255,.22);padding:2px 9px;border-radius:20px;font-size:11.5px}
+  .day-head h2{font-size:16px;font-weight:700}
+  .day-head .meta{margin-left:auto;font-size:12px;opacity:.92}
+  .day-body{padding:16px 18px}
+  /* timeline */
+  .tl{position:relative;padding-left:26px}
+  .tl::before{content:"";position:absolute;left:8px;top:6px;bottom:6px;width:2px;background:var(--line)}
+  .stop{position:relative;margin-bottom:18px}
+  .stop:last-child{margin-bottom:0}
+  .stop::before{content:"";position:absolute;left:-22px;top:4px;width:13px;height:13px;border-radius:50%;background:#fff;border:3px solid var(--brand);box-shadow:0 0 0 3px #e0f2fe}
+  .stop .time{font-size:12px;color:var(--brand-d);font-weight:700}
+  .stop .name{font-size:14.5px;font-weight:700;margin:2px 0 4px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .stop .name a{color:var(--brand-d);text-decoration:none;cursor:pointer;border-bottom:1px dashed var(--brand-d)}
+  .stop .name a:hover{color:var(--accent);border-color:var(--accent)}
+  .chip{font-size:10.5px;padding:1px 7px;border-radius:10px;background:#f1f5f9;color:var(--sub);font-weight:600}
+  .stop .desc{font-size:13px;color:#374151;margin-bottom:6px}
+  .stop .drive{font-size:12px;color:var(--sub);background:#f8fafc;border-left:3px solid var(--brand);padding:4px 9px;border-radius:0 6px 6px 0;margin:6px 0}
+  .tips{background:#fff7ed;border:1px solid #fed7aa;border-radius:9px;padding:9px 12px;font-size:12.5px;margin-top:6px}
+  .tips .t-head{color:var(--accent);font-weight:700;font-size:12px;margin-bottom:3px;display:flex;align-items:center;gap:4px}
+  .tips ul{margin:0;padding-left:16px}
+  .tips li{margin:2px 0;color:#7c2d12}
+  .stay{background:#ecfdf5;border:1px solid #a7f3d0;border-radius:9px;padding:10px 12px;font-size:12.5px;margin-top:8px}
+  .stay .s-head{color:var(--green);font-weight:700;font-size:12px;margin-bottom:5px}
+  .stay-opt{display:flex;gap:6px;align-items:baseline;margin:4px 0;flex-wrap:wrap}
+  .stay-opt .tag{flex:none;font-size:10.5px;font-weight:700;padding:1px 6px;border-radius:4px;color:#fff;white-space:nowrap}
+  .stay-opt .tag.hi{background:#059669}
+  .stay-opt .tag.mid{background:#3b82f6}
+  .stay-opt .tag.eco{background:#f59e0b}
+  .stay-opt .nm{font-size:12px;font-weight:600;color:#1e293b}
+  .stay-opt .dt{font-size:11.5px;color:var(--sub);flex:1;min-width:120px}
+  .stay-note{font-size:11px;color:var(--sub);margin-top:5px;line-height:1.5}
+  .day-budget{font-size:12px;color:var(--sub);text-align:right;margin-top:6px}
+  .hl{text-align:center;font-size:12.5px;color:var(--brand-d);font-weight:600;background:#eff6ff;border-radius:8px;padding:6px;margin-top:8px}
+  /* bottom */
+  .bottom{max-width:1500px;margin:0 auto 30px;padding:0 16px}
+  .panel{background:var(--card);border-radius:14px;padding:18px 20px;margin-bottom:16px;box-shadow:0 2px 10px rgba(0,0,0,.05);border:1px solid var(--line)}
+  .panel h3{font-size:16px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px;border-bottom:2px solid var(--line);padding-bottom:8px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px 26px}
+  .checklist{font-size:13px}
+  .checklist .grp{font-weight:700;color:var(--brand-d);margin:8px 0 4px;font-size:13px}
+  .checklist label{display:block;margin:3px 0;padding-left:22px;position:relative;cursor:default}
+  .checklist input{position:absolute;left:0;top:2px;accent-color:var(--brand)}
+  .tips-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+  .tip-card{background:#f8fafc;border-radius:10px;padding:11px 13px;border-left:4px solid var(--brand)}
+  .tip-card.altai{border-left-color:var(--red)}
+  .tip-card h4{font-size:13px;font-weight:700;margin-bottom:5px}
+  .tip-card p{font-size:12.5px;color:#4b5563}
+  .disclaimer{font-size:11.5px;color:var(--sub);text-align:center;padding:10px}
+  .marker-pop{font-size:12px}
+  .marker-pop b{font-size:13px}
+  /* ===== 平板：左右分栏改为上下堆叠 ===== */
+  @media(max-width:980px){
+    .wrap{flex-direction:column;padding:12px;gap:12px}
+    .map-col{position:relative;flex:none}
+    #map{height:52vh;min-height:320px}
+    .itin-col{width:100%}
+    .grid2{grid-template-columns:1fr}
+    .bottom{padding:0 12px}
+  }
+  /* ===== 手机：进一步压缩，修复错位 ===== */
+  @media(max-width:640px){
+    /* header */
+    header{padding:16px 14px}
+    header h1{font-size:17px;line-height:1.35;word-break:break-word}
+    header .sub{font-size:12px}
+    .flight-bar{flex-direction:column;gap:8px;margin-top:10px}
+    .flight-card{font-size:12px;padding:8px 11px;line-height:1.5;word-break:break-word;overflow-wrap:anywhere}
+    .flight-card b{font-size:13px}
+    /* wrap & map */
+    .wrap{padding:10px;gap:10px}
+    .map-col{width:100%}
+    .map-title{padding:6px 10px;font-size:11px;border-radius:8px}
+    #map{height:46vh;min-height:300px;border-radius:12px}
+    .map-legend{padding:7px 10px;font-size:10.5px;border-radius:8px;gap:6px 12px}
+    .map-legend .dot{width:9px;height:9px}
+    /* day card */
+    .day{border-radius:12px;margin-bottom:12px}
+    .day-head{padding:12px 14px;flex-wrap:wrap;gap:6px 8px}
+    .day-head .tag{font-size:10.5px;padding:2px 7px}
+    .day-head h2{font-size:14.5px;flex:1 1 auto;min-width:60%}
+    .day-head .meta{margin-left:0;font-size:11px;width:100%;order:3}
+    .day-body{padding:13px 14px}
+    /* timeline */
+    .tl{padding-left:22px}
+    .tl::before{left:7px}
+    .stop::before{left:-20px;width:11px;height:11px;border-width:2px}
+    .stop .time{font-size:11.5px}
+    .stop .name{font-size:13.5px;gap:6px}
+    .stop .name a{font-size:11.5px}
+    .stop .desc{font-size:12.5px}
+    .stop .drive{font-size:11.5px;padding:4px 8px}
+    .chip{font-size:10px;padding:1px 6px}
+    .tips{padding:8px 10px;font-size:12px}
+    .tips .t-head{font-size:11.5px}
+    .tips li{font-size:12px}
+    .stay{padding:9px 10px;font-size:12px}
+    .hl{font-size:12px;padding:6px}
+    .day-budget{font-size:11.5px}
+    /* bottom panels */
+    .panel{padding:14px 13px;border-radius:12px}
+    .panel h3{font-size:14.5px}
+    .tips-grid{grid-template-columns:1fr;gap:10px}
+    .tip-card{padding:10px 11px}
+    .tip-card h4{font-size:12.5px}
+    .tip-card p{font-size:12px}
+    .checklist{font-size:12.5px}
+    .checklist .grp{font-size:12.5px}
+    .disclaimer{font-size:11px;padding:8px 6px}
+  }
+  /* ===== 超窄屏（≤380px）兜底 ===== */
+  @media(max-width:380px){
+    header h1{font-size:15.5px}
+    #map{height:42vh;min-height:260px}
+    .day-head h2{font-size:13.5px;min-width:55%}
+    .stop .name{font-size:13px}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🗺️ 南京 → 成都及周边 · 6 天 5 晚深度行程</h1>
+  <div class="sub">九寨沟（高铁往返）/ 都江堰 / 三星堆 / 乐山大佛 / 熊猫谷 / 武侯祠 / 春熙路 / 棣爸炸串 · 零回头路顺向动线</div>
+  <div class="flight-bar">
+    <div class="flight-card">✈️ <b>去程</b>　07:30 南京禄口 T2 → 10:25 成都天府 T2　四川航空 3U5105 等 · 约 2h55m · 参考 ¥700–1200</div>
+    <div class="flight-card">✈️ <b>返程</b>　约 21:30–22:30 成都天府 → 南京禄口 · 约 2h45m · 参考 ¥700–1200</div>
+    <div class="flight-card">🚗 <b>交通</b>　九寨沟段高铁往返（成都东⇌黄龙九寨站）+ 全程包车接送 · 三人出行行李无忧</div>
+    <div class="flight-card">💰 <b>人均预算</b>　约 ¥4200–5700（含机+高铁+全程包车+宿+票+餐）</div>
+  </div>
+</header>
+
+<div class="wrap">
+  <!-- LEFT MAP -->
+  <div class="map-col">
+    <div class="map-title">📍 全程动线 · 点击右侧景点可定位</div>
+    <div id="map"></div>
+    <div class="map-legend">
+      <div class="lg" style="font-weight:700">图例</div>
+      <div class="lg"><span class="dot" style="background:#0ea5e9"></span>景点/美食</div>
+      <div class="lg"><span class="dot" style="background:#10b981"></span>住宿点</div>
+      <div class="lg"><span class="dot" style="background:#ef4444"></span>机场</div>
+      <div class="lg"><span style="display:inline-block;width:18px;border-top:3px solid #f97316"></span>包车路线</div>
+      <div class="lg"><span style="display:inline-block;width:18px;border-top:3px dashed #8b5cf6"></span>高铁+直通车</div>
+      <div class="lg" style="color:#f97316;font-weight:600">⛰️ 海拔见点位弹窗</div>
+    </div>
+  </div>
+
+  <!-- RIGHT ITINERARY -->
+  <div class="itin-col" id="itin">
+
+    <!-- DAY 1 -->
+    <div class="day">
+      <div class="day-head" style="background:linear-gradient(90deg,#0ea5e9,#38bdf8)">
+        <span class="tag">Day 1</span>
+        <h2>抵蓉访古 · 三星堆寻秘</h2>
+        <span class="meta">🚐 约 75km 包车 · 含飞行</span>
+      </div>
+      <div class="day-body">
+        <div class="tl">
+          <div class="stop">
+            <div class="time">07:30 – 10:25</div>
+            <div class="name">✈️ 南京禄口 → 成都天府国际机场 <a data-pt="airport-go">📍地图定位</a></div>
+            <div class="desc">搭乘当日最早直达航班（四川航空 3U5105 / 东方航空 MU2805 / 中联航 KN6101 等均有 07:30 起飞班次，落地天府 T2）。飞行约 2 小时 55 分。</div>
+            <div class="drive">🚐 天府机场 → 广汉三星堆：约 75km / 1.5h（经成都绕城高速北行）</div>
+            <div class="tips"><div class="t-head">⚡ 避坑贴士</div><ul>
+              <li>选位靠窗，蜀道山景入云；落地后机场取车建议提前在 App 预约，避免现场排队。</li>
+              <li>天府机场距市区较远（约 50km），切勿误以为离成都近；包车直接北上广汉更顺。</li>
+            </ul></div>
+          </div>
+          <div class="stop">
+            <div class="time">12:00 – 13:00</div>
+            <div class="name">🍜 午餐 · 广汉本地食坊</div>
+            <div class="desc">广汉名吃「缠丝兔」「连山回锅肉」，人均 ¥40–60。推荐广汉市区金雁路一带小店。</div>
+          </div>
+          <div class="stop">
+            <div class="time">13:00 – 16:30</div>
+            <div class="name">🏛️ 三星堆博物馆 <span class="chip">门票 ¥72</span><span class="chip">需预约</span><a data-pt="sanxingdui">📍地图定位</a></div>
+            <div class="desc">沉睡数千年、一醒惊天下。综合馆看青铜大立人、金面具；青铜馆看神树与纵目面具；文物修复馆可看修复现场。建议游览 3–3.5h。推荐路线：综合馆 → 青铜馆 → 修复馆。</div>
+            <div class="tips"><div class="t-head">⚡ 避坑贴士</div><ul>
+              <li><b>必须提前预约</b>：官方微信公众号「三星堆博物馆」提前 5 天、每晚 20:00 放票；7 月属寒暑假实行延时开放至 20:00，票更紧张务必卡点抢。</li>
+              <li>排队高峰 10:00–11:30、14:00–15:30，下午 13:00 进馆人流相对少；青铜馆最热门，先冲青铜馆再回头。</li>
+              <li>馆内「讲解器」¥30 值得租，比人工团听得清且不挤；禁止使用闪光灯。</li>
+              <li>消费避雷：门口「出土复刻纪念品」溢价高，想买认准馆内文创店正品。</li>
+            </ul></div>
+            <div class="drive">🚐 三星堆 → 成都市区：约 60km / 1.5h（经成都绕城高速）</div>
+          </div>
+          <div class="stop">
+            <div class="time">18:00 – 20:00</div>
+            <div class="name">🍜 晚餐 · 春熙路美食 <a data-pt="chunxi">📍地图定位</a></div>
+            <div class="desc">入住成都后直奔春熙路觅食。推荐「龙抄手」总店、「马旺子」川菜（人均 ¥80–120）；IFS 熊猫屁股打卡。饭后散步太古里，感受成都夜生活。</div>
+          </div>
+        </div>
+        <div class="stay"><div class="s-head">🏨 当日住宿 · 全季酒店(成都春熙路太古里店)</div>
+          <div class="stay-opt"><span class="tag mid">中档</span><span class="nm">全季酒店(成都春熙路太古里店)</span><a data-pt="hotel-chengdu">📍地图定位</a><span class="dt">📍春熙路/太古里核心区，步行至太古里约 5 分钟，地铁 2/3 号线春熙路站步行可达，到成都东站地铁约 15 分钟</span></div>
+          <div class="stay-note">💡 华住旗下全季品牌，位置核心，晚上直接逛街吃火锅；<b>次日从成都东站坐高铁去九寨沟仅地铁 15 分钟</b>，不用赶远路。连续住同一酒店，行李不用挪。</div>
+        </div>
+        <div class="hl">🎯 本日亮点：一落地即冲国宝级博物馆，当晚入住成都市区，养精蓄锐次日高铁进九寨</div>
+        <div class="day-budget">💰 本日预算：人均约 ¥430（含机票分摊 / 餐 / 票 / 住宿分摊）</div>
+      </div>
+    </div>
+
+    <!-- DAY 2 -->
+    <div class="day">
+      <div class="day-head" style="background:linear-gradient(90deg,#10b981,#34d399)">
+        <span class="tag">Day 2</span>
+        <h2>高铁北上 · 初抵九寨</h2>
+        <span class="meta">🚄 高铁+包车接送 · 约 4h · 海拔 500→2900→2000m</span>
+      </div>
+      <div class="day-body">
+        <div class="tl">
+          <div class="stop">
+            <div class="time">07:00 – 08:00</div>
+            <div class="name">🚇 成都市区 → 成都东站 <a data-pt="chengdu-dong">📍地图定位</a></div>
+            <div class="desc">地铁 2/7 号线直达成都东站，约 12–15 分钟。建议 07:30 前到站，预留安检取票时间。早餐可在站内或途中解决。</div>
+            <div class="tips"><div class="t-head">⚡ 避坑贴士</div><ul>
+              <li><b>高铁票提前 15 天在 12306 购买</b>，旺季（7–8 月）极抢手，建议卡点抢；推荐 C5782（06:45 发车）或上午班次（10:23 发车）。</li>
+              <li>成都东站分多层，高铁在 2 层候车，看清检票口编号；身份证直接刷闸进站，无需取纸质票。</li>
+            </ul></div>
+          </div>
+          <div class="stop">
+            <div class="time">08:24 – 10:03</div>
+            <div class="name">🚄 成都东 → 黄龙九寨站 <span class="chip">高铁 ¥128</span><a data-pt="huanglong-zhai">📍地图定位</a></div>
+            <div class="desc">川青铁路动车组，最快 1 小时 39 分直达。沿途经什邡、绵竹、茂县、松潘，窗外岷山峡谷风光壮丽。二等座 ¥128，一等座 ¥164–205。</div>
+            <div class="tips"><div class="t-head">⚡ 避坑贴士</div><ul>
+              <li>选靠窗座赏沿途峡谷风光；过茂县后海拔快速攀升至 2900m，部分人可能开始有轻微高反感，保持放松即可。</li>
+              <li>黄龙九寨站海拔约 2900m，出站后气温明显降低（比成都低 10–15℃），<b>提前备好冲锋衣/厚外套在随身包</b>，不要塞行李箱。</li>
+            </ul></div>
+          </div>
+          <div class="stop">
+            <div class="time">10:30 – 12:30</div>
+            <div class="name">🚐 黄龙九寨站 → 九寨沟口（包车接送） <span class="chip">含全程包车</span><a data-pt="jiuzhai">📍地图定位</a></div>
+            <div class="desc">出站后包车直奔沟口酒店，车程约 2 小时，沿途经九寨沟县山景。三人带行李直接送酒店门口，不用搬运行李换乘。</div>
+            <div class="tips"><div class="t-head">⚡ 避坑贴士</div><ul>
+              <li>包车直接送到沟口酒店门口，<b>不用拖着行李找直通车</b>，三人出行尤其省心。</li>
+              <li>途中海拔从 2900m 降至沟口 2000m，身体会感觉舒适一些，但不可掉以轻心。</li>
+              <li>包车师傅提前在站外等候，出站即上车，不用等班次。</li>
+            </ul></div>
+          </div>
+          <div class="stop">
+            <div class="time">12:30 – 13:30</div>
+            <div class="name">🍜 午餐 · 九寨沟口</div>
+            <div class="desc">沟口餐厅以川菜藏餐为主，推荐藏式糌粑、牦牛肉面，人均 ¥40–60。<b>点菜前先问价</b>，警惕"野生菌高价宰客"菜单。</div>
+          </div>
+          <div class="stop">
+            <div class="time">14:00 – 17:30</div>
+            <div class="name">🏞️ 九寨沟口 · 边边街轻逛 <a data-pt="jiuzhai">📍地图定位</a></div>
+            <div class="desc">抵达后不进沟，在沟口「边边街」漫步、看藏族风情、喝酥油茶，让身体逐步适应海拔（沟口海拔约 2000m）。相比包车 5.5h 颠簸，高铁下午 1 点就到，多出半天适应时间。早睡为次日蓄力。</div>
+            <div class="tips"><div class="t-head">⚡ 避坑贴士</div><ul>
+              <li>今晚切忌洗澡水温过高、切忌饮酒剧烈运动，降低高反概率；多喝温水、可提前服红景天。</li>
+              <li>沟口药店可购便携氧气瓶（¥30–50/瓶），备 1–2 瓶次日入园应急。</li>
+              <li>高铁比包车快约 1.5h，今天到达更早，有充足时间慢逛适应，高反风险更低。</li>
+            </ul></div>
+          </div>
+        </div>
+        <div class="stay"><div class="s-head">🏨 当日住宿 · 西子·礼白酒店(九寨沟店)</div>
+          <div class="stay-opt"><span class="tag mid">中档</span><span class="nm">西子·礼白酒店(九寨沟店)</span><a data-pt="hotel-jiuzhai">📍地图定位</a><span class="dt">📍九寨沟口漳扎镇，近景区大门，包车送酒店门口，步行入园方便</span></div>
+          <div class="stay-note">💡 紧邻景区，次日能最早一批抢观光车，不用清早赶路。海拔约 2000m，是进沟前最佳缓冲点。连续住两晚不换酒店，行李不用挪。</div>
+        </div>
+        <div class="hl">🎯 本日亮点：高铁 1.5h 替代包车 5.5h 颠簸，下午 1 点即达沟口，多出半天适应海拔</div>
+        <div class="day-budget">💰 本日预算：人均约 ¥380（高铁 ¥128 + 直通车 ¥51 + 餐 + 住宿分摊）</div>
+      </div>
+    </div>
+
+    <!-- DAY 3 -->
+    <div class="day">
+      <div class="day-head" style="background:linear-gradient(90deg,#f97316,#fb923c)">
+        <span class="tag">Day 3</span>
+        <h2>童话九寨 · 全天深度</h2>
+        <span class="meta">🚐 景区内观光车 · 海拔 2000–3100m</span>
+      </div>
+      <div class="day-body">
+        <div class="tl">
+          <div class="stop">
+            <div class="time">07:30 – 08:00</div>
+            <div class="name">🚪 九寨沟景区入园 <span class="chip">门票 ¥190 + 观光车 ¥90</span><span class="chip">需预约</span><a data-pt="jiuzhai">📍地图定位</a></div>
+            <div class="desc">务必 7:30 到大门排队，8:00 开园第一批冲车。门票需提前 7 天在「九寨沟」官方微信公众号实名预约，旺季极抢手。</div>
+            <div class="tips"><div class="t-head">⚡ 避坑贴士 · 最优游览路线</div><ul>
+              <li><b>核心策略：先坐观光车直达沟顶，从高到低徒步游览，全程下坡省体力，完全不走回头路。</b></li>
+              <li><b>总路线</b>：沟口入园 → 左线则查洼沟（车直达长海） → 诺日朗中心换乘 → 右线日则沟 → 树正沟 → 出沟。一次顺向走完三条沟，不折返。</li>
+              <li><b>抢早班观光车是关键</b>：第一批车先发往长海（则查洼沟尽头），可避开后续大团；越晚上车越挤。</li>
+              <li>景区呈 Y 字形：先坐车到最远端长海/原始森林，再一路向下玩，省体力又错峰。</li>
+              <li>午餐景区内诺日朗服务中心有自助（¥60–80），比自带干粮轻松，但高峰需排队，建议 11:30 前去吃。</li>
+            </ul></div>
+          </div>
+          <div class="stop">
+            <div class="time">08:00 – 12:30</div>
+            <div class="name">🌲 则查洼沟（Y 字左支）</div>
+            <div class="desc">长海（九寨最大海子，海拔 3100m 最高点）→ 五彩池（九寨最小却最蓝）。约 2h。长海到五彩池走栈道下坡很美。</div>
+            <div class="tips"><div class="t-head">⚡ 避坑贴士</div><ul>
+              <li>长海海拔最高，停留不宜过久，有头晕立即下撤；五彩池虽小但色彩惊艳，是出片王炸。</li>
+            </ul></div>
+          </div>
+          <div class="stop">
+            <div class="time">12:30 – 13:30</div>
+            <div class="name">🍜 午餐 · 诺日朗中心</div>
+            <div class="desc">景区内唯一集中就餐点，自助或简餐，人均 ¥60。</div>
+          </div>
+          <div class="stop">
+            <div class="time">13:30 – 16:30</div>
+            <div class="name">💧 日则沟（Y 字右支）</div>
+            <div class="desc">五花海（九寨精华，必拍）→ 珍珠滩及珍珠滩瀑布（《西游记》片尾取景）→ 镜海。约 3h。五花海最佳光线在下午，正合时宜。</div>
+            <div class="tips"><div class="t-head">⚡ 避坑贴士</div><ul>
+              <li>五花海是全景区人最多点，找栈道下层观景台可避开人群拍大片。</li>
+              <li>珍珠滩瀑布水雾大，给手机相机做好防水；栈道湿滑注意脚下。</li>
+            </ul></div>
+          </div>
+          <div class="stop">
+            <div class="time">16:30 – 18:00</div>
+            <div class="name">🌊 树正沟（Y 字主干）</div>
+            <div class="desc">诺日朗瀑布 → 树正群海 → 芦苇海 → 盆景滩，一路向下出沟。傍晚光线柔和，树正群海层叠海子最美。约 1.5h。</div>
+          </div>
+          <div class="stop">
+            <div class="time">18:30 – 20:00</div>
+            <div class="name">🍜 晚餐 · 沟口藏式火锅</div>
+            <div class="desc">牦牛肉火锅暖身驱寒，人均 ¥80–120。</div>
+            <div class="tips"><div class="t-head">🏔️ 高反预防与应对</div><ul>
+              <li>九寨沟海拔 2000–3100m，多数人反应轻微；切忌剧烈跑跳、说话太大声。</li>
+              <li>随身备便携氧气瓶（沟口药店 ¥30–50/瓶），头晕胸闷时吸几口缓解，别依赖。</li>
+              <li>当晚少洗澡或不洗（避免消耗体力）、多喝温水、保证睡眠；症状严重（持续头痛呕吐）立即下撤至低海拔。</li>
+              <li>提前 3–5 天服红景天有一定预防作用；高血压、心脏病、孕妇需谨慎评估是否前往。</li>
+            </ul></div>
+          </div>
+        </div>
+        <div class="stay"><div class="s-head">🏨 当日住宿 · 西子·礼白酒店(九寨沟店)（续住）</div>不换酒店——昨日已入住西子·礼白酒店，今天全天沟内暴走很累，回到同一酒店步行入园、步行回房，原地休息最省心。</div>
+        <div class="hl">🎯 本日亮点：Y 字形全沟深度走法 + 抢早车错峰，一天看尽九寨精华水景</div>
+        <div class="day-budget">💰 本日预算：人均约 ¥480（票 ¥280 + 餐 ¥130 + 住宿分摊 + 氧气等）</div>
+      </div>
+    </div>
+
+    <!-- DAY 4 -->
+    <div class="day">
+      <div class="day-head" style="background:linear-gradient(90deg,#ec4899,#f472b6)">
+        <span class="tag">Day 4</span>
+        <h2>高铁返程 · 锦官城夜</h2>
+        <span class="meta">🚄 高铁+包车接送 · 约 4h · 海拔 2000→500m</span>
+      </div>
+      <div class="day-body">
+        <div class="tl">
+          <div class="stop">
+            <div class="time">08:00 – 10:00</div>
+            <div class="name">🚐 九寨沟口 → 黄龙九寨站（包车接送） <span class="chip">含全程包车</span><a data-pt="huanglong-zhai">📍地图定位</a></div>
+            <div class="desc">清早从沟口酒店出发，包车直达黄龙九寨站，车程约 2h。建议 8:00 出发，衔接 10:30 左右的高铁返程。行李直接放车上，不用搬运。</div>
+            <div class="tips"><div class="t-head">⚡ 避坑贴士</div><ul>
+              <li>包车从酒店门口接站，<b>不用拖着行李赶直通车班次</b>，时间灵活可控。</li>
+              <li>退房时检查行李，尤其氧气瓶别遗忘——高铁可携带但别在车厢内使用。</li>
+            </ul></div>
+          </div>
+          <div class="stop">
+            <div class="time">10:30 – 12:15</div>
+            <div class="name">🚄 黄龙九寨站 → 成都东 <span class="chip">高铁 ¥128</span><a data-pt="chengdu-dong">📍地图定位</a></div>
+            <div class="desc">川青铁路动车组返程，约 1.5–2h 到成都东站。二等座 ¥128。窗外依旧是岷山峡谷，回程视角不同。</div>
+            <div class="tips"><div class="t-head">⚡ 避坑贴士</div><ul>
+              <li><b>返程高铁票也要提前 15 天在 12306 购买</b>，旺季同样抢手；建议买 10:30–11:30 出发的班次，下午 1 点到成都。</li>
+              <li>高铁抵达成都东后，地铁 2/7 号线直达春熙路/天府广场，约 12–15 分钟。</li>
+            </ul></div>
+            <div class="drive">🚇 成都东站 → 春熙路：地铁约 15 分钟</div>
+          </div>
+          <div class="stop">
+            <div class="time">12:30 – 13:30</div>
+            <div class="name">🍜 午餐 · 成都市区</div>
+            <div class="desc">到成都先吃碗担担面/龙抄手垫肚子，人均 ¥40。推荐春熙路附近「赖汤圆」「钟水饺」老字号。</div>
+          </div>
+          <div class="stop">
+            <div class="time">14:00 – 17:00</div>
+            <div class="name">⛩️ 武侯祠 <span class="chip">门票 ¥50</span><a data-pt="wuhou">📍地图定位</a></div>
+            <div class="desc">三国圣地、君臣合祀。重点看汉昭烈庙、武侯祠、三绝碑、红墙竹影（网红拍照点）。约 2–3h。</div>
+            <div class="tips"><div class="t-head">⚡ 避坑贴士</div><ul>
+              <li>「红墙夹道」是出片圣地，下午斜阳光影最美，但需排队机位，建议 16:00 后去。</li>
+              <li>武侯祠紧邻锦里古街，可顺路逛（锦里免费但商业化重，小吃溢价高，浅逛即可）。</li>
+              <li>夏季开放至 18:00（部分时段延时），16:00 后人流减少。</li>
+            </ul></div>
+            <div class="drive">🚐 武侯祠 → 春熙路：约 3km / 10–15min</div>
+          </div>
+          <div class="stop">
+            <div class="time">18:00 – 21:30</div>
+            <div class="name">🌃 春熙路 / 太古里 <span class="chip">免费</span><a data-pt="chunxi">📍地图定位</a></div>
+            <div class="desc">成都潮流地标。逛 IFS 熊猫屁股打卡、太古里红墙寺院混搭风、大慈寺。晚餐推荐：春熙路「龙抄手」总店、太古里「马旺子」川菜（人均 ¥80–120）。</div>
+            <div class="tips"><div class="t-head">⚡ 避坑贴士</div><ul>
+              <li>IFS 顶层观景台拍大熊猫正面是免费隐藏机位，从 7 楼雕塑旁上。</li>
+              <li>春熙路小吃街「三大炮、糖油果子」可尝，但正餐别在步行街吃（游客价），钻进太古里背后的小巷更地道。</li>
+              <li>「马旺子」「饕林」等网红川菜需排队，可提前在 App 取号。</li>
+            </ul></div>
+          </div>
+        </div>
+        <div class="stay"><div class="s-head">🏨 当日住宿 · 全季酒店(成都春熙路太古里店)（续住）</div>不换酒店——Day1 已入住全季春熙路太古里店，今天高铁返程后游武侯祠、逛春熙路，回到同一酒店休息。次日去都江堰从市区出发约 60km/1h，包车从酒店门口接站方便。</div>
+        <div class="hl">🎯 本日亮点：高铁 1.5h 轻松返蓉 + 下午三国文化 + 夜晚潮流成都，转场零浪费</div>
+        <div class="day-budget">💰 本日预算：人均约 ¥380（高铁 ¥128 + 直通车 ¥51 + 票 ¥50 + 餐 + 住宿分摊）</div>
+      </div>
+    </div>
+
+    <!-- DAY 5 -->
+    <div class="day">
+      <div class="day-head" style="background:linear-gradient(90deg,#8b5cf6,#a78bfa)">
+        <span class="tag">Day 5</span>
+        <h2>千古水利 · 熊猫吸氧</h2>
+        <span class="meta">🚐 成都往返约 120km · 轻松日</span>
+      </div>
+      <div class="day-body">
+        <div class="tl">
+          <div class="stop">
+            <div class="time">08:00 – 09:00</div>
+            <div class="name">🚐 成都 → 都江堰景区</div>
+            <div class="desc">包车从成都市区出发，经成灌高速约 60km / 1h 到都江堰景区。建议 8:00 出发，9:00 开园即入避开大团。</div>
+            <div class="drive">🚐 成都 → 都江堰：约 60km / 1h</div>
+          </div>
+          <div class="stop">
+            <div class="time">09:00 – 12:00</div>
+            <div class="name">🌊 都江堰景区 <span class="chip">门票 ¥80</span><a data-pt="dujiangyan">📍地图定位</a></div>
+            <div class="desc">两千多年前李冰父子修建的无坝引水工程。路线：离堆公园 → 宝瓶口 → 飞沙堰 → 鱼嘴 → 安澜索桥 → 秦堰楼俯瞰全景。约 3h。</div>
+            <div class="tips"><div class="t-head">⚡ 避坑贴士</div><ul>
+              <li>从「离堆公园」门进、「玉垒山」方向出可顺向不走回头路；秦堰楼是俯瞰鱼嘴全景最佳机位，别错过。</li>
+              <li>景区内电瓶车 ¥10/段可省体力，但安澜索桥必须步行过桥才能看全貌。</li>
+              <li>避开周末 10:00 后的大团，建议 9:00 开园即入；玉垒山步道较陡，老人小孩量力。</li>
+              <li>门口「黑导」拉客讲解慎选，景区官方讲解 ¥100 性价比更高。</li>
+            </ul></div>
+            <div class="drive">🚐 都江堰景区 → 熊猫谷：约 8km / 15min</div>
+          </div>
+          <div class="stop">
+            <div class="time">12:30 – 13:30</div>
+            <div class="name">🍜 午餐 · 都江堰本地川菜</div>
+            <div class="desc">推荐「尤兔头」「杨柳河街钵钵鸡」，人均 ¥40–60。</div>
+          </div>
+          <div class="stop">
+            <div class="time">14:00 – 16:30</div>
+            <div class="name">🐼 熊猫谷（都江堰繁育野放基地） <span class="chip">门票 ¥55</span><span class="chip">需预约</span><a data-pt="panda">📍地图定位</a></div>
+            <div class="desc">比成都大熊猫基地人少得多、体验更沉浸，可看熊猫野化训练与小熊猫生态区。下午熊猫活跃度高。约 2.5h。</div>
+            <div class="tips"><div class="t-head">⚡ 避坑贴士</div><ul>
+              <li><b>需线上实名预约</b>（成都大熊猫基地公众号），夏季 17:00 停止入园，务必提前购票。</li>
+              <li>熊猫怕热，夏季下午 14:00 后才出外场活动，去早了可能只看到睡觉的团子。</li>
+              <li>小熊猫生态区是隐藏玩法，走吊桥栈道可近距离偶遇，记得放轻脚步。</li>
+              <li>禁止投喂、闪光灯；园区不大，无需坐观光车。</li>
+            </ul></div>
+            <div class="drive">🚐 熊猫谷 → 成都市区：约 65km / 1h</div>
+          </div>
+          <div class="stop">
+            <div class="time">17:30 – 19:30</div>
+            <div class="name">🍜 晚餐 · 成都市区</div>
+            <div class="desc">回到成都后晚餐推荐「饕林」「马旺子」川菜，人均 ¥80–120；或火锅「小龙坎」「蜀大侠」，为旅程画上圆满句号。</div>
+          </div>
+        </div>
+        <div class="stay"><div class="s-head">🏨 当日住宿 · 全季酒店(成都春熙路太古里店)（续住）</div>不换酒店——Day1 已入住全季春熙路太古里店，今天都江堰+熊猫谷一日游往返，回到同一酒店。次日去乐山从成都南下约 130km/2h，包车从酒店门口接站出发方便。</div>
+        <div class="hl">🎯 本日亮点：千古水利 + 国宝熊猫一网打尽，全程无长途车程，轻松收尾</div>
+        <div class="day-budget">💰 本日预算：人均约 ¥330（票 ¥135 + 餐 ¥150 + 包车分摊 + 住宿分摊）</div>
+      </div>
+    </div>
+
+    <!-- DAY 6 -->
+    <div class="day">
+      <div class="day-head" style="background:linear-gradient(90deg,#0284c7,#38bdf8)">
+        <span class="tag">Day 6</span>
+        <h2>乐山炸串 · 大佛返程</h2>
+        <span class="meta">🚐 约 280km · 含飞行</span>
+      </div>
+      <div class="day-body">
+        <div class="tl">
+          <div class="stop">
+            <div class="time">08:30 – 10:30</div>
+            <div class="name">🚐 成都 → 乐山张公桥</div>
+            <div class="desc">成雅高速南下，约 130km / 2h，直达乐山市区张公桥美食街（棣爸炸串所在）。</div>
+            <div class="drive">🚐 成都 → 乐山：约 130km / 2h</div>
+          </div>
+          <div class="stop">
+            <div class="time">10:30 – 11:30</div>
+            <div class="name">🍢 棣爸油炸（张公桥总店） <span class="chip">人均 ¥45</span><a data-pt="diba">📍地图定位</a></div>
+            <div class="desc">演员王鹤棣爸爸开的乐山炸串名店。地址：市中区张公桥街 89 号，营业 10:00–01:00。10:30 到刚好开门不排队，当作早午餐先开吃。蔬菜炸得酥脆、裹秘制调料，招牌掌中宝、郡肝、藕片必点。</div>
+            <div class="tips"><div class="t-head">⚡ 避坑贴士</div><ul>
+              <li>10:00 刚开门时随到随吃，完美避开 12:00–14:00、18:00–20:00 排队高峰。</li>
+              <li>张公桥整条街都是乐山美食（跷脚牛肉、钵钵鸡、甜皮鸭），可顺路打包当机上餐。</li>
+              <li>认准「张公桥街 89 号」总店，另有上中顺等分店；总店王鹤棣元素最多。</li>
+            </ul></div>
+            <div class="drive">🚐 张公桥 → 乐山大佛景区：约 4km / 10min</div>
+          </div>
+          <div class="stop">
+            <div class="time">11:30 – 15:30</div>
+            <div class="name">🪨 乐山大佛景区 <span class="chip">门票 ¥80</span><span class="chip">游船 ¥70</span><a data-pt="leshan">📍地图定位</a></div>
+            <div class="desc">世界最高石刻弥勒坐像。推荐「登山+游船」组合玩法约 3.5–4h：北门进 → 凌云寺 → 九曲栈道下至佛脚 → 佛脚平台 → 灵宝塔，再乘船从江上看大佛全景。</div>
+            <div class="tips"><div class="t-head">⚡ 避坑贴士</div><ul>
+              <li><b>正确定位：乐山大佛北门（花湖湾停车场）</b>，下车步行 5 分钟直达检票口，无强制交通。导航务必搜「乐山大佛北门」或「花湖湾停车场」，切勿被路边「东方佛都」指示牌带偏——<b>不要去东方佛都，那是要另收门票的独立景区，不是乐山大佛</b>。</li>
+              <li><b>九曲栈道是排队重灾区</b>，旺季排队 30–60min；建议进园后直奔九曲栈道先下佛脚，再回头游凌云寺。</li>
+              <li>游船最后一班约 16:00–17:00（季节变动），从江上看大佛全景最震撼、且不用排队栈道，时间紧可只选游船（1.5h）。</li>
+              <li>「黑导」称可走免票小路千万别信；景区内烧香消费高，量力。</li>
+              <li>佛脚栈道狭窄陡峭，恐高/老人慎行，可在观佛平台远眺。</li>
+            </ul></div>
+            <div class="drive">🚐 乐山 → 天府机场：约 150km / 2h（建议 16:00 前出发）</div>
+          </div>
+          <div class="stop">
+            <div class="time">16:00 – 18:00</div>
+            <div class="name">🚐 返程前往天府机场 <a data-pt="airport-back">📍地图定位</a></div>
+            <div class="desc">留足 2h 车程 + 2h 提前值机，国内航班建议起飞前 2h 到达。还车、办理托运。</div>
+          </div>
+          <div class="stop">
+            <div class="time">21:30 – 22:30</div>
+            <div class="name">✈️ 成都天府 → 南京禄口</div>
+            <div class="desc">搭乘当日最晚直达航班返宁（如国航 CA2617 19:40→22:15 等晚间班次，请以购票平台实时为准，优选 21:00 后起飞班次最大化当日游玩）。</div>
+            <div class="tips"><div class="t-head">⚡ 避坑贴士</div><ul>
+              <li>乐山到天府机场走「成渝环线+成都绕城」约 2h，遇晚高峰预留 2.5h 更稳。</li>
+              <li>若返程航班偏早（如 19:40），则乐山行程需提前至早上 8:00 出发，确保 17:00 前离乐。</li>
+            </ul></div>
+          </div>
+        </div>
+        <div class="hl">🎯 本日亮点：王鹤棣同款炸串开门即吃 + 乐山大佛登山游船双视角，无缝衔接晚班机</div>
+        <div class="day-budget">💰 本日预算：人均约 ¥520（车费分摊 + 票船 ¥150 + 餐 + 机票分摊）</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- BOTTOM PANELS -->
+<div class="bottom">
+
+  <div class="panel">
+    <h3>🎒 完整出行准备清单</h3>
+    <div class="grid2">
+      <div class="checklist">
+        <div class="grp">证件类</div>
+        <label><input type="checkbox"> 身份证（景区实名入园必备）</label>
+        <label><input type="checkbox"> 驾驶证（如自驾）/ 包车司机联系方式</label>
+        <label><input type="checkbox"> 机票行程单电子版、酒店预订单截图</label>
+        <div class="grp">衣物类（7 月四川）</div>
+        <label><input type="checkbox"> 速干短袖 3–4 件 + 防晒外套（山区早晚凉）</label>
+        <label><input type="checkbox"> 冲锋衣/薄羽绒（九寨沟早晚 10–15℃）</label>
+        <label><input type="checkbox"> 防滑徒步鞋（栈道湿滑）+ 拖鞋</label>
+        <label><input type="checkbox"> 遮阳帽、墨镜、防晒口罩</label>
+      </div>
+      <div class="checklist">
+        <div class="grp">高原 & 药品类</div>
+        <label><input type="checkbox"> 红景天（提前 3–5 天服用）</label>
+        <label><input type="checkbox"> 便携氧气瓶 1–2 瓶（沟口药店购）</label>
+        <label><input type="checkbox"> 晕车药、肠胃药、感冒药、创可贴</label>
+        <label><input type="checkbox"> 葡萄糖/巧克力（补充体力）</label>
+        <div class="grp">电子 & 其他</div>
+        <label><input type="checkbox"> 充电宝（景区耗电快）、防水手机袋</label>
+        <label><input type="checkbox"> 雨衣/折叠伞（7 月山区多阵雨）</label>
+        <label><input type="checkbox"> 保温杯、湿巾、纸巾</label>
+        <label><input type="checkbox"> 少量现金（山区信号偶有不稳）</label>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h3>💡 全程旅游建议 & 避坑总览</h3>
+    <div class="tips-grid">
+      <div class="tip-card"><h4>🎫 预约必做清单</h4><p>九寨沟（提前 7 天）、三星堆（提前 5 天，晚 20:00 放票）、熊猫谷（线上实名）、乐山大佛（建议提前 1 天）。7 月旺季务必卡点抢票，现场无票。</p></div>
+      <div class="tip-card"><h4>🚗 全程包车注意事项</h4><p>九寨沟段乘高铁（成都东⇌黄龙九寨站），<b>高铁票提前 15 天在 12306 购买</b>，旺季极抢手；黄龙九寨站到沟口包车接送（含全程包车套餐内）。其余段包车共 3 天+接送 + 九寨沟接送，三人出行全程接送行李无忧；签正规合同、确认含司机食宿与过路费；都江堰/乐山市区停车难，优先景区官方停车场。</p></div>
+      <div class="tip-card"><h4>🌶️ 美食避雷</h4><p>景区内/步行街小吃溢价高，钻小巷更地道；警惕「野生菌高价宰客」菜单先问价；乐山甜皮鸭、钵钵鸡、跷脚牛肉值得专门吃；肠胃弱者逐步适应辣度。</p></div>
+      <div class="tip-card"><h4>📱 推荐 App</h4><p>高德/百度地图（导航+实时路况）、12306/携程（机酒）、大众点评（餐厅排队取号）、九寨沟/三星堆官方公众号（预约）、墨迹天气（山区阵雨预警）。</p></div>
+      <div class="tip-card altai"><h4>🏔️ 高原反应预防</h4><p>九寨沟海拔 2000–3100m，多数反应轻微。核心：不剧烈运动、不洗澡过热、不饮酒、多喝温水、早睡。备氧气瓶应急但不依赖；高血压/心脏病/孕妇谨慎评估；症状重立即下撤。</p></div>
+      <div class="tip-card"><h4>⛰️ 全程海拔阶梯</h4><p><b>Day1</b> 天府机场海拔≈462m → 三星堆海拔≈470m → 成都市区海拔≈500m（盆地）｜<b>Day2</b> 成都东海拔≈500m → 高铁途经黄龙九寨站海拔≈2900m（⚠️短暂高点）→ 九寨沟口海拔≈2000m｜<b>Day3</b> 九寨沟沟口海拔≈2000m，长海最高海拔≈3100m（高原区⚠️）｜<b>Day4</b> 高铁返程海拔降至≈500m（回落）｜<b>Day5</b> 都江堰海拔≈720m / 熊猫谷海拔≈700m（过渡带）｜<b>Day6</b> 乐山大佛海拔≈360m（盆地）。<b>注意：Day2 高铁途经黄龙九寨站海拔 2900m 比沟口还高，但仅短暂停留；真正高反风险在 Day3 沟内长海 3100m。</b></p></div>
+      <div class="tip-card"><h4>🌧️ 7 月天气与穿搭</h4><p>成都/乐山 25–33℃湿热多阵雨；九寨沟 15–25℃早晚凉。穿搭「短袖+防晒外套+冲锋衣」叠穿，雨具随身。山区紫外线强，防晒 SPF50+。</p></div>
+      <div class="tip-card"><h4>💰 预算总览（人均）</h4><p>机票往返 ¥1400–2400｜高铁往返 ¥256｜全程包车（接机+三星堆+九寨沟接送+都江堰往返+乐山送机）人均约 ¥870｜住宿 5 晚 ¥800–1500｜门票 ¥485｜餐饮 ¥600–900｜其他 ¥200｜合计约 ¥4200–5700。</p></div>
+      <div class="tip-card"><h4>🚗 交通与车程提示</h4><p>高铁往返九寨沟比全程包车省时约 1.5h/单程，且更舒适安全；黄龙九寨站海拔 2900m，出站备好厚外套。全程包车行李放车上不用搬，三人出行省心省力；都江堰/武侯祠/春熙路市区停车难，优先景区官方停车场；九寨沟沟口住彭丰村/隆康村步行入园最省。</p></div>
+    </div>
+  </div>
+
+  <div class="disclaimer">⚠️ 以上信息基于公开资料整理（2025–2026），实际票价、预约政策、航班时刻以各景区/航司/平台官方发布为准，出行前请二次核实。</div>
+</div>
+
+<script>
+// ====== MAP ======
+const map = L.map('map',{scrollWheelZoom:true,zoomControl:true,attributionControl:true}).setView([31.6,103.9],7);
+
+// 高德浅色中文底图（免密钥瓦片）
+L.tileLayer('https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}',{
+  subdomains:['1','2','3','4'],maxZoom:17,attribution:'© Amap'
+}).addTo(map);
+
+// 点位数据
+const PTS = {
+  'airport-go':     {ll:[30.312,104.441], name:'成都天府国际机场', type:'airport', day:'Day1 起点', alt:'海拔约462m'},
+  'sanxingdui':     {ll:[31.043,104.268], name:'三星堆博物馆（广汉）', type:'spot', day:'Day1', alt:'海拔约470m'},
+  'chunxi':         {ll:[30.659,104.0817], name:'春熙路 / 太古里', type:'spot', day:'Day1/Day4', alt:'海拔约500m'},
+  'chengdu-dong':   {ll:[30.629,104.137], name:'成都东站（高铁出发）', type:'spot', day:'Day2/Day4', alt:'海拔约500m'},
+  'huanglong-zhai': {ll:[32.752,103.683], name:'黄龙九寨站（高铁）', type:'spot', day:'Day2/Day4', alt:'海拔约2900m'},
+  'jiuzhai':        {ll:[33.2602,103.924], name:'九寨沟风景区', type:'spot', day:'Day2-3', alt:'海拔沟口2000m / 长海3100m'},
+  'wuhou':          {ll:[30.644,104.048], name:'武侯祠（成都）', type:'spot', day:'Day4', alt:'海拔约500m'},
+  'dujiangyan':     {ll:[30.9996,103.6107], name:'都江堰景区', type:'spot', day:'Day5', alt:'海拔约720m'},
+  'panda':          {ll:[31.0476,103.595], name:'熊猫谷（都江堰基地）', type:'spot', day:'Day5', alt:'海拔约700m'},
+  'leshan':         {ll:[29.544,103.771], name:'乐山大佛景区', type:'spot', day:'Day6', alt:'海拔约360m（凌云山顶约450m）'},
+  'diba':           {ll:[29.555,103.770], name:'棣爸油炸（张公桥街89号）', type:'spot', day:'Day6', alt:'海拔约360m'},
+  'airport-back':   {ll:[30.312,104.441], name:'天府机场（返程）', type:'airport', day:'Day6 终点', alt:'海拔约462m'},
+  'hotel-chengdu':  {ll:[30.659,104.082], name:'全季酒店(成都春熙路太古里店)', type:'hotel', day:'Day1/Day4/Day5 住宿', alt:'海拔约500m'},
+  'hotel-jiuzhai':  {ll:[33.265,103.905], name:'西子·礼白酒店(九寨沟店)', type:'hotel', day:'Day2-3 住宿', alt:'海拔约2000m'}
+};
+
+const icon = (c)=>L.divIcon({className:'',html:`<div style="width:18px;height:18px;border-radius:50%;background:${c};border:3px solid #fff;box-shadow:0 0 0 2px ${c},0 2px 6px rgba(0,0,0,.4)"></div>`,iconSize:[18,18],iconAnchor:[9,9]});
+const stayIcon = L.divIcon({className:'',html:'<div style="font-size:20px">🏨</div>',iconSize:[24,24],iconAnchor:[12,12]});
+
+const markers = {};
+Object.entries(PTS).forEach(([k,v])=>{
+  let m;
+  if(v.type==='hotel'){
+    m = L.marker(v.ll,{icon:stayIcon}).addTo(map);
+    m.bindPopup(`<div class="marker-pop"><b>🏨 ${v.name}</b><br>📍 海拔 <b style="color:#f97316">${v.alt||'—'}</b><br>${v.day}</div>`);
+  } else {
+    const col = v.type==='airport' ? '#ef4444' : '#0ea5e9';
+    m = L.marker(v.ll,{icon:icon(col)}).addTo(map);
+    m.bindPopup(`<div class="marker-pop"><b>${v.name}</b><br>📍 海拔 <b style="color:#f97316">${v.alt||'—'}</b><br>${v.day}</div>`);
+  }
+  markers[k]=m;
+});
+
+// 路线连线（按天着色）
+const ROUTES = [
+  {color:'#0ea5e9', pts:[['airport-go'],['sanxingdui'],['chunxi']]},                                    // D1: 机场→三星堆→成都
+  {color:'#10b981', pts:[['chengdu-dong'],['huanglong-zhai'],['jiuzhai']], dash:true},                 // D2: 高铁+直通车北上
+  {color:'#ec4899', pts:[['jiuzhai'],['huanglong-zhai'],['chengdu-dong'],['wuhou'],['chunxi']], dash:true}, // D4: 高铁返程+武侯祠+春熙路
+  {color:'#8b5cf6', pts:[['chunxi'],['dujiangyan'],['panda'],['chunxi']]},                             // D5: 都江堰+熊猫谷往返
+  {color:'#0284c7', pts:[['chunxi'],['diba'],['leshan'],['airport-back']]}                              // D6: 乐山返程
+];
+ROUTES.forEach(r=>{
+  const latlngs = r.pts.map(p=> Array.isArray(p)&&typeof p[0]==='string' ? PTS[p[0]].ll : p);
+  L.polyline(latlngs,{color:r.color,weight:3.5,opacity:.8,dashArray: r.dash ? '8,6' : null}).addTo(map);
+});
+
+// 里程标注
+const DIST = [
+  {from:[30.312,104.441],to:[31.043,104.268],txt:'75km'},
+  {from:[31.043,104.268],to:[30.659,104.0817],txt:'60km'},
+  {from:[30.629,104.137],to:[32.752,103.683],txt:'🚄1.5h'},
+  {from:[32.752,103.683],to:[33.2602,103.924],txt:'🚌2h'},
+  {from:[30.659,104.0817],to:[30.9996,103.6107],txt:'60km'},
+  {from:[30.659,104.0817],to:[29.544,103.771],txt:'130km'},
+  {from:[29.544,103.771],to:[30.312,104.441],txt:'150km'}
+];
+DIST.forEach(d=>{
+  const mid=[(d.from[0]+d.to[0])/2,(d.from[1]+d.to[1])/2];
+  L.marker(mid,{icon:L.divIcon({className:'',html:`<div style="background:#fff;border:1px solid #f97316;color:#f97316;font-size:11px;font-weight:700;padding:1px 6px;border-radius:10px;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.2)">${d.txt}</div>`,iconSize:[40,16],iconAnchor:[20,8]})}).addTo(map);
+});
+
+// 点击右侧"地图定位"联动
+document.querySelectorAll('[data-pt]').forEach(el=>{
+  const k = el.getAttribute('data-pt');
+  const v = PTS[k];
+  // 自动注入海拔标签
+  if(v && v.alt){
+    const tag=document.createElement('span');
+    tag.className='chip';
+    tag.style.cssText='background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;font-weight:600';
+    tag.textContent='⛰️ 海拔 '+v.alt;
+    el.parentNode.insertBefore(tag, el.nextSibling);
+  }
+  el.addEventListener('click',e=>{
+    e.preventDefault();
+    const k = el.getAttribute('data-pt');
+    const v = PTS[k];
+    if(!v) return;
+    map.flyTo(v.ll, 11, {duration:1.2});
+    setTimeout(()=>{ markers[k] && markers[k].openPopup(); }, 1300);
+    el.style.color='#f97316';
+  });
+});
+
+// 适配高度（flex 容器需多次校正 + 监听尺寸变化）
+const _mapEl = document.getElementById('map');
+setTimeout(()=>map.invalidateSize(),300);
+setTimeout(()=>map.invalidateSize(),800);
+if(window.ResizeObserver){
+  new ResizeObserver(()=>map.invalidateSize()).observe(_mapEl);
+}
+window.addEventListener('resize',()=>map.invalidateSize());
+</script>
+</body>
+</html>
