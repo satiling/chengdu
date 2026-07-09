@@ -14,6 +14,7 @@
     --brand:#0ea5e9; --brand-d:#0369a1; --accent:#f97316; --green:#10b981; --red:#ef4444; --gold:#eab308;
     --chengdu:#0ea5e9; --chengdu-d:#0369a1;
     --guizhou:#10b981; --guizhou-d:#0d9488;
+    --taishan:#f97316; --taishan-d:#c2410c;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   body{font-family:"PingFang SC","Microsoft YaHei",system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6;min-height:100vh}
@@ -42,13 +43,16 @@
   .city-card:hover .card-cta{background:var(--brand-d);letter-spacing:1px}
   .city-card.chengdu:hover{border-color:var(--chengdu)}
   .city-card.guizhou:hover{border-color:var(--guizhou)}
+  .city-card.taishan:hover{border-color:var(--taishan)}
   .city-card.chengdu:hover .card-cta{background:var(--chengdu-d)}
   .city-card.guizhou:hover .card-cta{background:var(--guizhou-d)}
+  .city-card.taishan:hover .card-cta{background:var(--taishan-d)}
 
   /* card cover */
   .card-cover{position:relative;height:170px;overflow:hidden;display:flex;align-items:flex-end;padding:18px}
   .city-card.chengdu .card-cover{background:linear-gradient(135deg,#0ea5e9 0%,#0369a1 100%)}
   .city-card.guizhou .card-cover{background:linear-gradient(135deg,#10b981 0%,#0d9488 100%)}
+  .city-card.taishan .card-cover{background:linear-gradient(135deg,#f97316 0%,#c2410c 100%)}
   .card-cover::before{content:"";position:absolute;top:0;left:0;right:0;bottom:0;background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><circle cx='20' cy='30' r='1.5' fill='%23ffffff' opacity='0.15'/><circle cx='70' cy='60' r='1' fill='%23ffffff' opacity='0.12'/><circle cx='40' cy='80' r='1.2' fill='%23ffffff' opacity='0.18'/><circle cx='85' cy='20' r='0.8' fill='%23ffffff' opacity='0.15'/><circle cx='55' cy='40' r='1' fill='%23ffffff' opacity='0.1'/></svg>");opacity:.6;pointer-events:none}
   .city-emblem{position:absolute;top:14px;right:18px;font-size:80px;opacity:.25;line-height:1;pointer-events:none}
   .cover-tag{position:absolute;top:16px;left:18px;background:rgba(255,255,255,.25);border:1px solid rgba(255,255,255,.35);color:#fff;padding:3px 10px;border-radius:20px;font-size:11.5px;font-weight:600;backdrop-filter:blur(4px)}
@@ -64,6 +68,7 @@
   .hl-chip{font-size:11.5px;padding:3px 9px;border-radius:14px;background:#f1f5f9;color:#475569;font-weight:600;border:1px solid #e2e8f0}
   .city-card.chengdu .hl-chip.tag{background:#e0f2fe;color:#0369a1;border-color:#bae6fd}
   .city-card.guizhou .hl-chip.tag{background:#d1fae5;color:#065f46;border-color:#a7f3d0}
+  .city-card.taishan .hl-chip.tag{background:#fff7ed;color:#c2410c;border-color:#fed7aa}
 
   /* info rows */
   .info-row{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;color:var(--sub);padding:7px 0;border-top:1px dashed var(--line)}
@@ -125,11 +130,11 @@
 
 <header>
   <h1>🧭 旅游规划汇总 · 全国私家行程地图</h1>
-  <div class="sub">已规划城市：成都及周边 · 贵州全景 · 点击下方卡片查看详细行程（地图+时间轴+避坑贴士）</div>
+  <div class="sub">已规划城市：成都及周边 · 贵州全景 · 泰山 · 点击下方卡片查看详细行程（地图+时间轴+避坑贴士）</div>
   <div class="header-stats">
-    <div class="stat-pill">📍 <b>2</b> 个城市</div>
-    <div class="stat-pill">🗓️ 累计 <b>13</b> 天行程</div>
-    <div class="stat-pill">💰 人均预算 <b>¥4200–6800</b></div>
+    <div class="stat-pill">📍 <b>3</b> 个城市</div>
+    <div class="stat-pill">🗓️ 累计 <b>16</b> 天行程</div>
+    <div class="stat-pill">💰 人均预算 <b>¥1600–6800</b></div>
     <div class="stat-pill">👥 3 人出行定制</div>
   </div>
 </header>
@@ -152,7 +157,7 @@
       </div>
       <div class="card-body">
         <div class="route-line">
-          <span class="arr">南京 ✈️</span> → 成都（广汉三星堆） → 九寨沟（高铁） → 武侯祠/春熙路 → 都江堰/熊猫谷 → 乐山大佛/炸串 ✈️ <span class="arr">南京</span>
+          <span class="arr">南京 ✈️</span> → 成都（三星堆）→ 都江堰/熊猫谷 → 九寨沟（高铁）→ 武侯祠/梨园变脸/春熙路 → 乐山大佛/棣爸炸串 ✈️ <span class="arr">南京</span>
         </div>
         <div class="highlights">
           <span class="hl-chip tag">九寨沟</span>
@@ -160,6 +165,7 @@
           <span class="hl-chip tag">都江堰</span>
           <span class="hl-chip tag">熊猫谷</span>
           <span class="hl-chip tag">武侯祠</span>
+          <span class="hl-chip tag">梨园变脸</span>
           <span class="hl-chip tag">乐山大佛</span>
           <span class="hl-chip tag">棣爸炸串</span>
         </div>
@@ -177,7 +183,7 @@
         </div>
         <div class="info-row">
           <span class="lbl">💰 人均预算</span>
-          <span class="val price">¥4200–5700</span>
+          <span class="val price">¥4300–5700</span>
         </div>
         <div class="card-cta">查看完整行程 →</div>
       </div>
@@ -226,6 +232,50 @@
       </div>
     </a>
 
+    <!-- 泰山 -->
+    <a class="city-card taishan" href="./taishan/index.html">
+      <div class="card-cover">
+        <span class="cover-tag">已上线 · 亲子登山版</span>
+        <span class="city-emblem">⛰️</span>
+        <div class="cover-title">
+          <h2>泰山</h2>
+          <div class="days">3 天 2 晚 · 南京往返 · 高铁+索道</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="route-line">
+          <span class="arr">南京 🚄</span> → 泰安（岱庙）→ 天外村大巴/中天门索道 → 南天门/天街/碧霞祠/玉皇顶（住山顶看日出）→ 下山炒鸡豆腐 🚄 <span class="arr">南京</span>
+        </div>
+        <div class="highlights">
+          <span class="hl-chip tag">泰山日出</span>
+          <span class="hl-chip tag">玉皇顶</span>
+          <span class="hl-chip tag">岱庙封禅</span>
+          <span class="hl-chip tag">五岳独尊</span>
+          <span class="hl-chip tag">碧霞祠</span>
+          <span class="hl-chip tag">天街</span>
+          <span class="hl-chip tag">索道登山</span>
+          <span class="hl-chip tag">泰山炒鸡</span>
+        </div>
+        <div class="info-row">
+          <span class="lbl">📅 行程天数</span>
+          <span class="val">3 天 2 晚</span>
+        </div>
+        <div class="info-row">
+          <span class="lbl">🚄 大交通</span>
+          <span class="val">高铁往返</span>
+        </div>
+        <div class="info-row">
+          <span class="lbl">🌡️ 关键海拔</span>
+          <span class="val">130m → 1545m</span>
+        </div>
+        <div class="info-row">
+          <span class="lbl">💰 人均预算</span>
+          <span class="val price">¥1600–2600</span>
+        </div>
+        <div class="card-cta">查看完整行程 →</div>
+      </div>
+    </a>
+
   </div>
 
   <div class="sec-title">城市位置总览</div>
@@ -250,8 +300,9 @@ L.tileLayer('https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scal
 }).addTo(map);
 
 const CITIES = [
-  {key:'chengdu', name:'成都及周边', ll:[30.66,103.92],  color:'#0ea5e9', dark:'#0369a1', url:'./chengdu/index.html', days:'6 天 5 晚', budget:'¥4200–5700', emblem:'🐼'},
-  {key:'guizhou', name:'贵州全景',   ll:[26.65,106.71],  color:'#10b981', dark:'#0d9488', url:'./guizhou/index.html', days:'7 天 6 晚', budget:'¥4800–6800', emblem:'⛰️'}
+  {key:'chengdu', name:'成都及周边', ll:[30.66,103.92],  color:'#0ea5e9', dark:'#0369a1', url:'./chengdu/index.html', days:'6 天 5 晚', budget:'¥4300–5700', emblem:'🐼'},
+  {key:'guizhou', name:'贵州全景',   ll:[26.65,106.71],  color:'#10b981', dark:'#0d9488', url:'./guizhou/index.html', days:'7 天 6 晚', budget:'¥4800–6800', emblem:'⛰️'},
+  {key:'taishan', name:'泰山',       ll:[36.25,117.10],  color:'#f97316', dark:'#c2410c', url:'./taishan/index.html', days:'3 天 2 晚', budget:'¥1600–2600', emblem:'🏔️'}
 ];
 
 const buildIcon = (c, e)=> L.divIcon({

@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<title>南京→泰安·泰山3天2晚亲子徒步行程</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  :root{
+    --bg:#f6f7f9; --card:#ffffff; --ink:#1f2937; --sub:#6b7280; --line:#e5e7eb;
+    --brand:#059669; --brand-d:#047857; --accent:#f97316; --green:#10b981; --red:#ef4444; --gold:#eab308;
+    --d1:#059669; --d2:#f97316; --d3:#8b5cf6;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"PingFang SC","Microsoft YaHei",system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--ink);line-height:1.7;font-size:16px}
+  /* header */
+  header{background:linear-gradient(135deg,#059669 0%,#047857 50%,#0369a1 100%);color:#fff;padding:28px 32px}
+  header h1{font-size:28px;font-weight:700;letter-spacing:.5px}
+  header .sub{font-size:17px;opacity:.92;margin-top:8px}
+  .flight-bar{display:flex;gap:16px;flex-wrap:wrap;margin-top:16px}
+  .flight-card{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.25);border-radius:10px;padding:12px 16px;font-size:16px;backdrop-filter:blur(4px);line-height:1.6}
+  .flight-card b{font-size:17px}
+  /* layout */
+  .wrap{display:flex;gap:20px;padding:20px;max-width:1500px;margin:0 auto}
+  .map-col{flex:0 0 46%;position:sticky;top:14px;align-self:flex-start;height:calc(100vh - 28px);display:flex;flex-direction:column;gap:8px}
+  .itin-col{flex:1;min-width:0}
+  .map-title{flex:none;background:rgba(255,255,255,.94);border-radius:10px;padding:10px 14px;font-size:15px;font-weight:600;box-shadow:0 2px 10px rgba(0,0,0,.12);text-align:center}
+  #map{width:100%;flex:1 1 auto;min-height:300px;border-radius:14px;box-shadow:0 4px 18px rgba(0,0,0,.08);border:1px solid var(--line);background:#e8eaed}
+  .map-legend{flex:none;background:rgba(255,255,255,.94);border-radius:10px;padding:11px 14px;font-size:14px;box-shadow:0 2px 10px rgba(0,0,0,.12);display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center}
+  .map-legend .lg{display:flex;align-items:center;gap:6px}
+  .map-legend .dot{width:13px;height:13px;border-radius:50%}
+  /* day card */
+  .day{background:var(--card);border-radius:14px;margin-bottom:18px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.05);border:1px solid var(--line)}
+  .day-head{padding:18px 22px;color:#fff;display:flex;align-items:center;gap:12px;cursor:pointer}
+  .day-head .tag{background:rgba(255,255,255,.22);padding:4px 12px;border-radius:20px;font-size:14px}
+  .day-head h2{font-size:21px;font-weight:700}
+  .day-head .meta{margin-left:auto;font-size:15px;opacity:.92}
+  .day-body{padding:20px 22px}
+  /* timeline */
+  .tl{position:relative;padding-left:32px}
+  .tl::before{content:"";position:absolute;left:10px;top:6px;bottom:6px;width:3px;background:var(--line)}
+  .stop{position:relative;margin-bottom:22px}
+  .stop:last-child{margin-bottom:0}
+  .stop::before{content:"";position:absolute;left:-28px;top:6px;width:16px;height:16px;border-radius:50%;background:#fff;border:4px solid var(--brand);box-shadow:0 0 0 4px #d1fae5}
+  .stop .time{font-size:15px;color:var(--brand-d);font-weight:700}
+  .stop .name{font-size:18px;font-weight:700;margin:3px 0 6px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .stop .name a{color:var(--brand-d);text-decoration:none;cursor:pointer;border-bottom:1px dashed var(--brand-d);font-size:15px}
+  .stop .name a:hover{color:var(--accent);border-color:var(--accent)}
+  .chip{font-size:13px;padding:3px 9px;border-radius:10px;background:#f1f5f9;color:var(--sub);font-weight:600}
+  .stop .desc{font-size:16px;color:#374151;margin-bottom:8px;line-height:1.75}
+  .stop .drive{font-size:15px;color:var(--sub);background:#f8fafc;border-left:3px solid var(--brand);padding:6px 12px;border-radius:0 6px 6px 0;margin:8px 0}
+  .tips{background:#fff7ed;border:1px solid #fed7aa;border-radius:9px;padding:13px 16px;font-size:16px;margin-top:8px;line-height:1.7}
+  .tips .t-head{color:var(--accent);font-weight:700;font-size:15px;margin-bottom:5px;display:flex;align-items:center;gap:4px}
+  .tips ul{margin:0;padding-left:20px}
+  .tips li{margin:4px 0;color:#7c2d12;font-size:16px}
+  .stay{background:#ecfdf5;border:1px solid #a7f3d0;border-radius:9px;padding:14px 16px;font-size:16px;margin-top:10px;line-height:1.7}
+  .stay .s-head{color:var(--green);font-weight:700;font-size:15px;margin-bottom:7px}
+  .stay-opt{display:flex;gap:8px;align-items:baseline;margin:6px 0;flex-wrap:wrap}
+  .stay-opt .tag{flex:none;font-size:13px;font-weight:700;padding:2px 8px;border-radius:4px;color:#fff;white-space:nowrap}
+  .stay-opt .tag.hi{background:#059669}
+  .stay-opt .tag.mid{background:#3b82f6}
+  .stay-opt .tag.eco{background:#f59e0b}
+  .stay-opt .nm{font-size:16px;font-weight:600;color:#1e293b}
+  .stay-opt .dt{font-size:15px;color:var(--sub);flex:1;min-width:120px}
+  .stay-note{font-size:14px;color:var(--sub);margin-top:7px;line-height:1.7}
+  .day-budget{font-size:15px;color:var(--sub);text-align:right;margin-top:8px}
+  .hl{text-align:center;font-size:16px;color:var(--brand-d);font-weight:600;background:#ecfdf5;border-radius:8px;padding:10px;margin-top:10px}
+  /* bottom */
+  .bottom{max-width:1500px;margin:0 auto 30px;padding:0 20px}
+  .panel{background:var(--card);border-radius:14px;padding:22px 24px;margin-bottom:18px;box-shadow:0 2px 10px rgba(0,0,0,.05);border:1px solid var(--line)}
+  .panel h3{font-size:21px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:10px;border-bottom:2px solid var(--line);padding-bottom:12px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px 30px}
+  .checklist{font-size:16px}
+  .checklist .grp{font-weight:700;color:var(--brand-d);margin:10px 0 6px;font-size:17px}
+  .checklist label{display:block;margin:6px 0;padding-left:26px;position:relative;cursor:default;line-height:1.7}
+  .checklist input{position:absolute;left:0;top:4px;width:16px;height:16px;accent-color:var(--brand)}
+  .tips-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+  .tip-card{background:#f8fafc;border-radius:10px;padding:14px 16px;border-left:4px solid var(--brand);line-height:1.7}
+  .tip-card.altai{border-left-color:var(--accent)}
+  .tip-card h4{font-size:17px;font-weight:700;margin-bottom:7px}
+  .tip-card p{font-size:16px;color:#4b5563}
+  .disclaimer{font-size:14px;color:var(--sub);text-align:center;padding:14px}
+  .marker-pop{font-size:14px;line-height:1.6}
+  .marker-pop b{font-size:15px}
+  /* ===== 平板：左右分栏改为上下堆叠 ===== */
+  @media(max-width:980px){
+    .wrap{flex-direction:column;padding:12px;gap:12px}
+    .map-col{position:relative;flex:none}
+    #map{height:52vh;min-height:320px}
+    .itin-col{width:100%}
+    .grid2{grid-template-columns:1fr}
+    .bottom{padding:0 12px}
+  }
+  /* ===== 手机：进一步压缩，修复错位 ===== */
+  @media(max-width:640px){
+    /* header */
+    header{padding:18px 16px}
+    header h1{font-size:22px;line-height:1.4;word-break:break-word}
+    header .sub{font-size:15px;margin-top:6px}
+    .flight-bar{flex-direction:column;gap:10px;margin-top:14px}
+    .flight-card{font-size:15px;padding:10px 13px;line-height:1.6;word-break:break-word;overflow-wrap:anywhere}
+    .flight-card b{font-size:16px}
+    /* wrap & map */
+    .wrap{padding:12px;gap:12px}
+    .map-col{width:100%}
+    .map-title{padding:8px 12px;font-size:14px;border-radius:8px}
+    #map{height:46vh;min-height:300px;border-radius:12px}
+    .map-legend{padding:9px 12px;font-size:13px;border-radius:8px;gap:6px 12px}
+    .map-legend .dot{width:11px;height:11px}
+    /* day card */
+    .day{border-radius:12px;margin-bottom:14px}
+    .day-head{padding:14px 16px;flex-wrap:wrap;gap:8px 10px}
+    .day-head .tag{font-size:13px;padding:3px 9px}
+    .day-head h2{font-size:18px;flex:1 1 auto;min-width:60%}
+    .day-head .meta{margin-left:0;font-size:13px;width:100%;order:3}
+    .day-body{padding:15px 16px}
+    /* timeline */
+    .tl{padding-left:26px}
+    .tl::before{left:9px;width:3px}
+    .stop::before{left:-24px;width:14px;height:14px;border-width:3px}
+    .stop .time{font-size:14px}
+    .stop .name{font-size:16px;gap:6px}
+    .stop .name a{font-size:14px}
+    .stop .desc{font-size:15px;line-height:1.7}
+    .stop .drive{font-size:14px;padding:5px 10px}
+    .chip{font-size:12px;padding:2px 7px}
+    .tips{padding:11px 13px;font-size:15px;line-height:1.7}
+    .tips .t-head{font-size:14px}
+    .tips li{font-size:15px}
+    .stay{padding:12px 13px;font-size:15px}
+    .hl{font-size:15px;padding:9px}
+    .day-budget{font-size:14px}
+    /* bottom panels */
+    .panel{padding:16px 15px;border-radius:12px}
+    .panel h3{font-size:18px}
+    .tips-grid{grid-template-columns:1fr;gap:12px}
+    .tip-card{padding:13px 14px}
+    .tip-card h4{font-size:16px}
+    .tip-card p{font-size:15px}
+    .checklist{font-size:15px}
+    .checklist .grp{font-size:16px}
+    .disclaimer{font-size:13px;padding:10px 8px}
+  }
+  /* ===== 超窄屏（≤380px）兜底 ===== */
+  @media(max-width:380px){
+    header h1{font-size:20px}
+    header .sub{font-size:14px}
+    .flight-card{font-size:14px}
+    .day-head h2{font-size:17px;min-width:55%}
+    .stop .name{font-size:15px}
+    .panel h3{font-size:17px}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>⛰️ 南京 → 泰安 · 泰山 3 天 2 晚亲子徒步行程</h1>
+  <div class="sub">岱庙封禅 / 红门徒步登山 / 斗母宫 / 十八盘 / 南天门 / 天街 / 碧霞祠 / 五岳独尊 / 玉皇顶日出 · 带孩子走最经典登山线</div>
+  <div class="flight-bar">
+    <div class="flight-card">🚄 <b>去程</b>　南京南 → 泰安　高铁约 1.5h · 二等座 ¥170–200 · 上午班次</div>
+    <div class="flight-card">🚄 <b>返程</b>　泰安 → 南京南　高铁约 1.5h · 二等座 ¥170–200 · 下午班次</div>
+    <div class="flight-card">🚶 <b>交通</b>　高铁往返 + 全程徒步登山 + 打车 · 红门经典线约 7km 上山</div>
+    <div class="flight-card">💰 <b>人均预算</b>　约 ¥1600–2600（含高铁+宿+票+餐，不含索道）</div>
+  </div>
+</header>
+
+<div class="wrap">
+  <!-- LEFT MAP -->
+  <div class="map-col">
+    <div class="map-title">📍 泰山全程动线 · 红门徒步登山线</div>
+    <div id="map"></div>
+    <div class="map-legend">
+      <div class="lg" style="font-weight:700">图例</div>
+      <div class="lg"><span class="dot" style="background:#059669"></span>景点/美食</div>
+      <div class="lg"><span class="dot" style="background:#10b981"></span>住宿点</div>
+      <div class="lg"><span class="dot" style="background:#ef4444"></span>高铁站</div>
+      <div class="lg"><span style="display:inline-block;width:18px;border-top:3px solid #f97316"></span>徒步路线</div>
+      <div class="lg"><span style="display:inline-block;width:18px;border-top:3px dashed #8b5cf6"></span>高铁</div>
+      <div class="lg" style="color:#f97316;font-weight:600">⛰️ 海拔见点位弹窗</div>
+    </div>
+  </div>
+
+  <!-- RIGHT ITINERARY -->
+  <div class="itin-col" id="itin">
+
+    <!-- DAY 1 -->
+    <div class="day">
+      <div class="day-head" style="background:linear-gradient(90deg,#059669,#34d399)">
+        <span class="tag">Day 1</span>
+        <h2>高铁抵泰 · 岱庙访古</h2>
+        <span class="meta">🚄 高铁约 1.5h + 打车 · 海拔 150→130m</span>
+      </div>
+      <div class="day-body">
+        <div class="tl">
+          <div class="stop">
+            <div class="time">08:00 – 09:30</div>
+            <div class="name">🚄 南京南 → 泰安站 <span class="chip">高铁 ¥170–200</span><a data-pt="taian-station">📍地图定位</a></div>
+            <div class="desc">搭乘上午高铁（如 G226 次 08:00 发车，约 1.5h 直达泰安站）。二等座约 ¥170–200，提前 15 天在 12306 购票。到达后出站打车，约 15 分钟到红门附近酒店。</div>
+            <div class="tips"><div class="t-head">⚡ 避坑贴士</div><ul>
+              <li><b>高铁票提前 15 天在 12306 购买</b>，暑假旺季较抢手；建议选 08:00 左右班次，上午抵达有充足时间。</li>
+              <li>泰安站是高铁站（非泰山站），两个站不同——<b>买票时认准「泰安站」</b>，离景区更近。</li>
+              <li>出站打车建议用滴滴/高德叫车，站外黑车可能绕路；到红门附近约 ¥20–25。</li>
+            </ul></div>
+            <div class="drive">🚕 泰安站 → 红门酒店：约 5km / 12min</div>
+          </div>
+          <div class="stop">
+            <div class="time">09:45 – 10:15</div>
+            <div class="name">🏨 红门附近酒店入住 · 放下全部行李 <a data-pt="hotel-foot">📍地图定位</a></div>
+            <div class="desc">酒店选在红门登山口附近，方便次日直接开始徒步。<b>大件行李全部放在山脚酒店</b>，只带换洗衣物和洗漱用品装一个小包上山顶，轻装登山。</div>
+            <div class="tips"><div class="t-head">⚡ 避坑贴士</div><ul>
+              <li><b>行李策略：大箱子留山脚酒店，山顶只带背包</b>——山顶物价高、路陡，每多一斤都是负担。</li>
+              <li>背包里备：换洗衣物 1 套、充电宝、零食水、薄外套（山顶比山下低 8–10℃）。</li>
+              <li>酒店前台可寄存行李 2 晚，Day 3 下山后回来取，不用拖着箱子爬山。</li>
+            </ul></div>
+          </div>
+          <div class="stop">
+            <div class="time">10:30 – 12:30</div>
+            <div class="name">🏛️ 岱庙 <span class="chip">门票 ¥20</span><a data-pt="dai-temple">📍地图定位</a></div>
+            <div class="desc"><b>历代帝王封禅泰山前的行宫，与北京故宫、曲阜三孔并称中国三大古建筑群。</b>岱庙始建于汉，是泰山最大古建筑群。推荐路线：正阳门 → 天贶殿（主殿，壁画《泰山神启跸回銮图》国宝级）→ 汉柏院 → 唐槐院 → 厚载门出。全程平缓不累，约 2h。</div>
+            <div class="tips"><div class="t-head">⚡ 避坑贴士</div><ul>
+              <li>天贶殿壁画是镇庙之宝，距今 900+ 年，禁止闪光灯拍照。</li>
+              <li>岱庙后门（厚载门）正对泰山，出门就能远眺红门登山口，拍照绝佳机位。</li>
+              <li>汉柏院有 5 棵 2000 岁古柏，传说汉武帝手植，给孩子讲故事最生动。</li>
+              <li>门票 ¥20 性价比极高，现场扫码或「泰山景区」公众号购票，无需提前预约。</li>
+            </ul></div>
+          </div>
+          <div class="stop">
+            <div class="time">13:00 – 14:00</div>
+            <div class="name">🍜 午餐 · 岱庙附近</div>
+            <div class="desc">岱庙周边老城区有不少泰安本地馆子，推荐泰山三美（白菜豆腐水）、泰安炒鸡、煎饼卷大葱，人均 ¥40–60。</div>
+          </div>
+          <div class="stop">
+            <div class="time">14:30 – 16:30</div>
+            <div class="name">🍢 泰安老街逛吃 <a data-pt="old-street">📍地图定位</a></div>
+            <div class="desc">下午去泰安老街/岱北街逛吃。推荐泰山煎饼、糖画、泰安火烧、烤冷面，人均 ¥30–50。<b>老街不长，浅逛即可，重点感受小城烟火气。</b></div>
+            <div class="tips"><div class="t-head">⚡ 避坑贴士</div><ul>
+              <li>泰安老街商业化程度低，物价亲民；煎饼推荐卷大葱+酱+鸡蛋的经典吃法。</li>
+              <li>16:30 前结束，准备去看封禅大典演出。</li>
+            </ul></div>
+          </div>
+          <div class="stop">
+            <div class="time">17:00 – 18:00</div>
+            <div class="name">� 晚餐 · 简餐</div>
+            <div class="desc">提前吃晚餐，建议选简餐或快餐，人均 ¥30–50。吃完后打车去封禅大典演出剧场。</div>
+          </div>
+          <div class="stop">
+            <div class="time">18:30 – 19:30</div>
+            <div class="name">🚕 打车前往封禅大典演出剧场 <span class="chip">打车约 ¥30–40</span><a data-pt="fengchan">📍地图定位</a></div>
+            <div class="desc">演出剧场位于泰山天烛峰景区附近，从红门打车约 20–30 分钟。<b>建议提前 30 分钟到场</b>，找座位、拍照、感受现场氛围。</div>
+            <div class="tips"><div class="t-head">⚡ 避坑贴士</div><ul>
+              <li><b>演出票提前在「泰山封禅大典」官网或美团购买</b>，约 ¥168–298，1.2m 以下儿童免票。</li>
+              <li>剧场在露天，晚上气温较低，建议带薄外套。</li>
+              <li>手机调静音，演出过程中禁止闪光灯拍照。</li>
+            </ul></div>
+            <div class="drive">🚕 红门酒店 → 封禅大典剧场：约 15km / 25min</div>
+          </div>
+          <div class="stop">
+            <div class="time">20:00 – 21:20</div>
+            <div class="name">🎭 《中华泰山·封禅大典》实景演出 <span class="chip">门票 ¥168–298</span></div>
+            <div class="desc"><b>以泰山为天然背景的露天实景演出，场面宏大、视觉震撼！</b>演出再现秦始皇、汉武帝、唐高宗、唐玄宗、宋真宗五位帝王封禅泰山的盛况，结合灯光、音效、舞美，讲述泰山千年封禅历史。全程约 80 分钟，共分为七个篇章。</div>
+            <div class="tips"><div class="t-head">⚡ 避坑贴士</div><ul>
+              <li><b>演出以泰山山体为背景</b>，灯光打在山上非常震撼，建议选中间区域座位。</li>
+              <li>给孩子讲解封禅历史，演出会更有意义——秦始皇统一六国后首封泰山，汉武帝一生八次来泰山。</li>
+              <li>演出结束后约 21:20，跟着人流走，打车回酒店约 22:00。</li>
+            </ul></div>
+          </div>
+          <div class="stop">
+            <div class="time">21:30 – 22:00</div>
+            <div class="name">🚕 返回酒店 · 早点休息</div>
+            <div class="desc">演出结束后打车回红门附近酒店，约 25 分钟。洗漱后早点休息，明天 07:30 出发登山，体力是明天的核心。</div>
+            <div class="tips"><div class="t-head">⚡ 今日切记</div><ul>
+              <li><b>今晚 22:30 前睡觉</b>，明天徒步登山需要充足体力。</li>
+              <li>登山装备今晚检查好：背包、薄外套、充电宝、零食水、身份证、登山杖。</li>
+            </ul></div>
+          </div>
+        </div>
+        <div class="stay"><div class="s-head">🏨 当日住宿 · 红门附近酒店</div>
+          <div class="stay-opt"><span class="tag mid">中档</span><span class="nm">汉庭(泰安红门店) / 7天连锁(泰山红门店)</span><a data-pt="hotel-foot">📍地图定位</a><span class="dt">📍红门登山口附近，步行至红门 3–5 分钟，次日出门即登山</span></div>
+          <div class="stay-note">💡 选在红门附近是关键——次日 07:30 从红门开始徒步，住旁边不用赶路。大件行李寄存酒店 2 晚，Day 3 下山回来取。</div>
+        </div>
+        <div class="hl">🎯 本日亮点：高铁 1.5h 抵泰安 → 岱庙看国宝壁画讲封禅故事 → 老街逛吃 → 晚上看封禅大典实景演出，沉浸式感受泰山千年历史</div>
+        <div class="day-budget">💰 本日预算：人均约 ¥600（高铁 ¥185 + 岱庙 ¥20 + 餐 ¥120 + 演出票 ¥200 + 住宿分摊 + 打车）</div>
+      </div>
+    </div>
+
+    <!-- DAY 2 -->
+    <div class="day">
+      <div class="day-head" style="background:linear-gradient(90deg,#f97316,#fb923c)">
+        <span class="tag">Day 2</span>
+        <h2>红门徒步 · 十八盘登顶</h2>
+        <span class="meta">🚶 全程徒步登山 · 海拔 150→840→1460m · 约 4–5h</span>
+      </div>
+      <div class="day-body">
+        <div class="tl">
+          <div class="stop">
+            <div class="time">07:30 – 08:00</div>
+            <div class="name">🍜 早餐后出发 · 步行至红门登山口 <a data-pt="hongmen">📍地图定位</a></div>
+            <div class="desc">酒店吃完早餐，步行 3–5 分钟到红门登山口。<b>泰山门票 ¥115，2 天有效</b>，现场扫码或「泰山景区」公众号购买，无需提前预约。</div>
+            <div class="tips"><div class="t-head">⚡ 避坑贴士</div><ul>
+              <li><b>7:30 出发避开旅游团高峰</b>——晚于 9:00 红门开始人多，拍照排队。</li>
+              <li>学生证半价门票 ¥57；1.4m 以下儿童免门票。</li>
+              <li>门口买登山杖 ¥10–15，带孩子建议每人一根，省力又安全。</li>
+            </ul></div>
+          </div>
+          <div class="stop">
+            <div class="time">08:00 – 10:30</div>
+            <div class="name">🚶 红门 → 中天门（慢走，约 2.5h）<a data-pt="zhongtianmen">📍地图定位</a></div>
+            <div class="desc"><b>红门线是泰山最经典的登山路线，全程约 7km，沿途风景绝佳，适合带孩子慢慢走。</b>前半程景点丰富：斗母宫（千年道观，古树参天）→ 经石峪（北齐摩崖刻经，大字鼻祖）→ 壶天阁（山势险要，有「壶天仙境」之称）→ 回马岭（传说乾隆骑马至此无法前行而得名）→ 中天门（半山腰中转站）。<b>平均每 20–30 分钟有休息点，带孩子边走边玩，不赶时间。</b></div>
+            <div class="tips"><div class="t-head">⚡ 亲子登山技巧</div><ul>
+              <li><b>节奏：10 分钟走 + 5 分钟歇</b>——孩子体力有限，走太快容易累；边走边讲沿途故事，分散注意力。</li>
+              <li>经石峪的大字非常震撼，给孩子讲「古人在石头上写字」的故事，增加趣味性。</li>
+              <li>沿途有卖矿泉水（¥5）和零食的摊位，但价格比山下高，建议自带 2–3 瓶水+能量棒。</li>
+              <li>斗母宫附近有卫生间和休息区，是第一个好的休整点。</li>
+              <li><b>约 4000 级台阶到中天门</b>，海拔从 150m 升到 840m，孩子可能会觉得累，多鼓励多休息。</li>
+            </ul></div>
+            <div class="drive">🚶 红门 → 中天门：约 4km / 2.5h（约 4000 级台阶）</div>
+          </div>
+          <div class="stop">
+            <div class="time">10:30 – 11:30</div>
+            <div class="name">🍜 中天门午餐 · 休整补给</div>
+            <div class="desc">中天门有餐厅和小卖部，提供泡面、热饭、饮料等。人均 ¥30–50，吃饱喝足再继续。<b>这里也有索道站，如果孩子实在走不动，可以从中天门坐索道上南天门（¥100/人）。</b></div>
+            <div class="tips"><div class="t-head">⚡ 避坑贴士</div><ul>
+              <li>中天门是唯一的撤退点——如果孩子体力不支，可在此坐索道或步行下山。</li>
+              <li>补充热水和能量，接下来的十八盘是最陡的路段。</li>
+            </ul></div>
+          </div>
+          <div class="stop">
+            <div class="time">11:30 – 14:00</div>
+            <div class="name">🚶 中天门 → 南天门（十八盘，约 2.5h）<a data-pt="nantianmen">📍地图定位</a></div>
+            <div class="desc"><b>十八盘是泰山最著名的路段，1633 级台阶，垂直高度约 400m，是登顶的最后挑战。</b>沿途风景越来越壮观，山势越来越险要。路线：快活三里（相对平缓的一段）→ 云步桥（瀑布美景）→ 五大夫松（秦始皇封五棵松树为大夫）→ 龙门（十八盘起点）→ 升仙坊 → 南天门。<b>带孩子走十八盘是考验也是成长，鼓励孩子坚持到底！</b></div>
+            <div class="tips"><div class="t-head">⚡ 十八盘亲子攻略</div><ul>
+              <li><b>十八盘分慢十八、不紧不慢十八、紧十八</b>——紧十八最陡，每级台阶只有半个脚掌宽，需侧着走更省力。</li>
+              <li><b>走 Z 字形路线</b>——不要直着往上爬，左右迂回走能减少坡度感，膝盖压力也小。</li>
+              <li><b>每 50 级台阶休息一次</b>——给孩子喝口水、吃点零食，大人也趁机喘口气。</li>
+              <li>云步桥是拍照绝佳点，瀑布+石刻+青山，让孩子停下来拍张照休息。</li>
+              <li>南天门就在眼前时，鼓励孩子「一鼓作气冲上去」，登顶后的成就感无与伦比！</li>
+              <li><b>如果实在太累，中天门有索道直接到南天门（¥100/人），不用硬撑。</b></li>
+            </ul></div>
+            <div class="drive">🚶 中天门 → 南天门：约 3km / 2.5h（约 2000 级台阶）</div>
+          </div>
+          <div class="stop">
+            <div class="time">14:00 – 15:00</div>
+            <div class="name">🏨 山顶宾馆入住 · 休整恢复 <a data-pt="hotel-top">📍地图定位</a></div>
+            <div class="desc">南天门出来步行 5 分钟即天街，宾馆就在天街附近。办理入住后把背包里不用的东西放房间，<b>只带手机、水、零食出门逛</b>，轻装更轻松。稍作休整喝杯热水。</div>
+            <div class="tips"><div class="t-head">⚡ 避坑贴士</div><ul>
+              <li><b>山顶宾馆务必提前 1 周以上预订</b>，暑期一房难求，价格 ¥400–1200/晚不等；推荐神憩宾馆、南天门宾馆，位置最近。</li>
+              <li>山顶房间小、条件有限（山区供水供电受限），降低预期；但住山顶是看日出的唯一方式。</li>
+              <li>入住时跟前台确认<b>日出叫醒服务</b>和<b>观日最佳路线</b>，前台最了解当天天气情况。</li>
+              <li>徒步登山后小腿酸痛是正常的，晚上用热水泡脚（部分宾馆提供）。</li>
+            </ul></div>
+          </div>
+          <div class="stop">
+            <div class="time">15:30 – 17:30</div>
+            <div class="name">🏞️ 山顶慢逛 · 天街→碧霞祠→五岳独尊→玉皇顶 <a data-pt="yuhuang">📍地图定位</a></div>
+            <div class="desc"><b>泰山山顶精华全在这一圈，全程平缓石板路，边走边歇约 2 小时。</b>路线：天街（天上街市，海拔最高商业街）→ 碧霞祠（泰山老奶奶庙，千年香火鼎盛）→ 唐摩崖（唐玄宗封禅亲书《纪泰山铭》，国宝级摩崖石刻）→ 五岳独尊石刻（人民币 5 元背面图案，必打卡）→ 玉皇顶（泰山极顶，海拔 1545m，「五岳之首」碑所在地）。</div>
+            <div class="tips"><div class="t-head">⚡ 避坑贴士</div><ul>
+              <li><b>全程平缓，没有陡台阶</b>（陡的十八盘已走完），适合慢走；每走 20 分钟有石凳休息。</li>
+              <li>碧霞祠香火旺，可祈福但不必在庙内买高香（溢价高），心诚则灵。</li>
+              <li>五岳独尊石刻排队拍照人多，建议先去玉皇顶再回来拍，错峰。</li>
+              <li>玉皇顶有「泰山极顶 1545m」石碑，合影打卡后可在旁边观日台眺望群山。</li>
+              <li>山顶物价高（矿泉水 ¥10、泡面 ¥20），自带零食水更划算。</li>
+            </ul></div>
+          </div>
+          <div class="stop">
+            <div class="time">19:20 – 19:45</div>
+            <div class="name">🌅 步行到观景点看日落</div>
+            <div class="desc">7 月日落约 19:30。从宾馆步行 5–10 分钟到观日台/探海石附近。<b>住山顶优势：不用熬夜赶路，看完日落 10 分钟走回宾馆。</b>泰山日落看云海晚霞，天气好时极美。</div>
+            <div class="tips"><div class="t-head">⚡ 避坑贴士</div><ul>
+              <li>日落前 15 分钟到位占好机位；山顶风大，带好外套帽子。</li>
+              <li>天气不好看不到日落也别失望——明天日出才是重头戏。</li>
+            </ul></div>
+          </div>
+          <div class="stop">
+            <div class="time">20:30 –</div>
+            <div class="name">🛏️ 早点休息 · 跟前台约好日出叫醒</div>
+            <div class="desc">看完日落回宾馆，洗漱后立即休息。<b>跟前台约好日出叫醒服务</b>（一般 04:30–04:40 叫醒），前台会根据当天天气和日出时间精准提醒。今晚 21:00 前睡觉。</div>
+            <div class="tips"><div class="t-head">⚡ 避坑贴士</div><ul>
+              <li>7 月泰山日出约 05:00–05:10，前台会告诉你当天精确时间。</li>
+              <li>今晚把明天要穿的衣服、手机充电准备好，凌晨起来迷迷糊糊不用找东西。</li>
+              <li>山顶夜晚 12–15℃，盖好被子别着凉。</li>
+            </ul></div>
+          </div>
+        </div>
+        <div class="stay"><div class="s-head">🏨 当日住宿 · 山顶宾馆</div>
+          <div class="stay-opt"><span class="tag hi">位置优先</span><span class="nm">神憩宾馆 / 南天门宾馆 / 天街宾馆</span><a data-pt="hotel-top">📍地图定位</a><span class="dt">📍天街附近，步行至观日台 5–10 分钟，看日出不用熬夜赶路</span></div>
+          <div class="stay-note">💡 山顶住宿条件有限但位置是王道——住山顶是看日出的唯一方式，否则需凌晨 2 点从山脚赶路。提前 1 周以上预订，暑期极抢手。</div>
+        </div>
+        <div class="hl">🎯 本日亮点：红门经典线徒步登山 → 斗母宫/经石峪/十八盘全程体验 → 孩子挑战自我成功登顶 → 看日落 → 住山顶等日出</div>
+        <div class="day-budget">💰 本日预算：人均约 ¥750（门票 ¥115 + 餐 ¥150 + 山顶住宿分摊 ¥300–500）</div>
+      </div>
+    </div>
+
+    <!-- DAY 3 -->
+    <div class="day">
+      <div class="day-head" style="background:linear-gradient(90deg,#8b5cf6,#a78bfa)">
+        <span class="tag">Day 3</span>
+        <h2>泰山日出 · 徒步下山</h2>
+        <span class="meta">🚶 徒步下山或索道下山 · 海拔 1545→130m · 含返程</span>
+      </div>
+      <div class="day-body">
+        <div class="tl">
+          <div class="stop">
+            <div class="time">04:40 – 05:00</div>
+            <div class="name">⏰ 起床 · 步行至观日点</div>
+            <div class="desc">前台叫醒后穿衣洗漱，<b>步行 5–10 分钟到日观峰/探海石观日点</b>。住山顶最大优势——不用凌晨 2 点出发赶路，4:40 起来走几步就到。7 月日出约 05:00–05:10。</div>
+            <div class="tips"><div class="t-head">⚡ 避坑贴士</div><ul>
+              <li><b>凌晨山顶 12–15℃，穿好外套帽子</b>；可加一件薄羽绒或冲锋衣。</li>
+              <li>观日点人较多，提前 10 分钟到占位；手机手电筒照路注意脚下石板。</li>
+              <li>带个保温杯装热水，等待时暖身。</li>
+            </ul></div>
+          </div>
+          <div class="stop">
+            <div class="time">05:00 – 06:00</div>
+            <div class="name">🌅 观赏泰山日出 · 拍照</div>
+            <div class="desc"><b>泰山日出是五岳之最，天气好时看太阳从云海中跃出，壮观震撼。</b>日出过程约 3–5 分钟，前后留 30–45 分钟拍照。日观峰/探海石是最佳机位，可同时拍日出和剪影。</div>
+            <div class="tips"><div class="t-head">⚡ 避坑贴士</div><ul>
+              <li>日出前后光线变化快，手机拍延时或视频比单张照片更有纪念意义。</li>
+              <li>天气不好看不到日出也别遗憾——泰山云雾本身也很美，而且「看不到日出」是泰山常态（约 40% 概率），心态放平。</li>
+            </ul></div>
+          </div>
+          <div class="stop">
+            <div class="time">06:30 – 07:30</div>
+            <div class="name">🍜 回宾馆吃早餐 · 收拾行李</div>
+            <div class="desc">看完日出走回宾馆，山顶宾馆一般含早或 ¥20/人简餐。吃饱后收拾行李退房，背包出门准备下山。</div>
+          </div>
+          <div class="stop">
+            <div class="time">08:00 – 11:00</div>
+            <div class="name">🚶 南天门 → 红门（徒步下山，约 3h）<a data-pt="hongmen">📍地图定位</a></div>
+            <div class="desc"><b>下山选择徒步或索道，各有好处。</b>徒步下山约 3–3.5h，沿途可看不同视角的风景，上山时错过的景点可以补看；但下山膝盖压力大，尤其是十八盘的台阶。<b>建议：如果孩子膝盖没问题，就徒步下山；如果担心膝盖，从中天门坐索道（¥100/人）或大巴（¥35/人）下山。</b></div>
+            <div class="tips"><div class="t-head">⚡ 下山攻略</div><ul>
+              <li><b>徒步下山技巧：侧身走、Z 字形走、下台阶时脚后跟先着地</b>，减少膝盖冲击力。</li>
+              <li>上山时人多的景点（如十八盘），下山时可能空无一人，可以从容拍照。</li>
+              <li>中天门可以作为休息点或换乘点——体力好继续走，累了就坐索道/大巴。</li>
+              <li>从红门徒步下山到山脚约 3–3.5h，比上山快；沿途有卖拐杖的（¥5–10），可以给孩子买一根助力。</li>
+              <li><b>备选方案：南天门→中天门坐索道（¥100）+ 中天门→天外村坐大巴（¥35），1h 到山脚，保护膝盖。</b></li>
+            </ul></div>
+            <div class="drive">🚶 南天门 → 红门：约 7km / 3–3.5h</div>
+          </div>
+          <div class="stop">
+            <div class="time">11:30 – 12:00</div>
+            <div class="name">📦 回山脚酒店取大件行李</div>
+            <div class="desc">回到 Day 1 入住的山脚酒店，取回寄存的大件行李。前台退房结清，打车去吃午餐。</div>
+          </div>
+          <div class="stop">
+            <div class="time">12:30 – 14:00</div>
+            <div class="name">🍜 山脚午餐 · 泰山炒鸡+泉水豆腐 <a data-pt="old-street">📍地图定位</a></div>
+            <div class="desc"><b>下山后好好吃一顿！</b>推荐泰山炒鸡（当地招牌，爆炒土鸡+土豆）、泉水豆腐（用泰山泉水做的豆腐，嫩滑鲜香）、泰安煎饼卷大葱。人均 ¥50–80。推荐老县衙/岱北街一带本地馆子。</div>
+            <div class="tips"><div class="t-head">⚡ 避坑贴士</div><ul>
+              <li>泰山炒鸡是当地必吃，「老县衙炒鸡」「老泰安炒鸡」评价都不错；点微辣孩子也能吃。</li>
+              <li>泉水豆腐是泰山三美之一（白菜、豆腐、水），清淡适合爬山后养胃。</li>
+            </ul></div>
+          </div>
+          <div class="stop">
+            <div class="time">14:30 – 14:45</div>
+            <div class="name">🚕 打车前往泰安站</div>
+            <div class="desc">午餐后打车去泰安站，约 15 分钟。建议选 15:30–16:30 左右的高铁返程，到南京约 17:00–18:00，不赶也不累。</div>
+            <div class="drive">🚕 酒店附近 → 泰安站：约 5km / 12min</div>
+          </div>
+          <div class="stop">
+            <div class="time">15:30 – 17:00</div>
+            <div class="name">🚄 泰安 → 南京南 <span class="chip">高铁 ¥170–200</span><a data-pt="taian-station">📍地图定位</a></div>
+            <div class="desc">搭乘下午高铁返程，约 1.5h 到南京南。<b>三天行程完美收尾——日出看了、山登了、挑战完成了、美食吃了，孩子收获满满的成就感！</b></div>
+            <div class="tips"><div class="t-head">⚡ 避坑贴士</div><ul>
+              <li><b>返程高铁票也要提前 15 天在 12306 购买</b>，暑期同样抢手。</li>
+              <li>到南京南后地铁/S1 机场线换乘方便，不赶时间。</li>
+              <li>回家后让孩子泡个热水澡放松肌肉，接下来几天可能会腿酸，正常现象。</li>
+            </ul></div>
+          </div>
+        </div>
+        <div class="hl">🎯 本日亮点：住山顶看日出不用熬夜赶路 → 徒步下山沿途补看风景 → 山脚吃炒鸡豆腐饱餐一顿 → 下午高铁回家，孩子收获满满成就感</div>
+        <div class="day-budget">💰 本日预算：人均约 ¥550（餐 ¥120 + 高铁 ¥185 + 打车，如需索道+大巴另加 ¥135）</div>
+      </div>
+    </div>
+
+
+  </div>
+</div>
+
+<!-- BOTTOM PANELS -->
+<div class="bottom">
+
+  <div class="panel">
+    <h3>🎒 完整出行准备清单</h3>
+    <div class="grid2">
+      <div class="checklist">
+        <div class="grp">证件类</div>
+        <label><input type="checkbox"> 身份证（景区实名入园必备）</label>
+        <label><input type="checkbox"> 学生证（学生半价门票 ¥57）</label>
+        <label><input type="checkbox"> 儿童身份证/户口本（1.4m 以下免门票）</label>
+        <label><input type="checkbox"> 高铁购票截图、酒店预订单截图</label>
+        <div class="grp">衣物类（7 月泰山）</div>
+        <label><input type="checkbox"> 速干短袖 2–3 件 + 防晒外套</label>
+        <label><input type="checkbox"> 薄羽绒/冲锋衣（山顶早晚 12–15℃）</label>
+        <label><input type="checkbox"> 防滑运动鞋（石板路+台阶）</label>
+        <label><input type="checkbox"> 遮阳帽、墨镜</label>
+      </div>
+      <div class="checklist">
+        <div class="grp">登山 & 药品类</div>
+        <label><input type="checkbox"> 登山杖（每人一根，省力安全）</label>
+        <label><input type="checkbox"> 创可贴、肠胃药、感冒药</label>
+        <label><input type="checkbox"> 葡萄糖/巧克力（补充体力）</label>
+        <label><input type="checkbox"> 保温杯装热水（山顶冷）</label>
+        <div class="grp">电子 & 其他</div>
+        <label><input type="checkbox"> 充电宝（山顶耗电快、拍照多）</label>
+        <label><input type="checkbox"> 雨衣/折叠伞（7 月山区多阵雨）</label>
+        <label><input type="checkbox"> 零食+水（沿途价格高）</label>
+        <label><input type="checkbox"> 少量现金（山顶信号偶有不稳）</label>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h3>💡 全程旅游建议 & 避坑总览</h3>
+    <div class="tips-grid">
+      <div class="tip-card"><h4>🎫 预约必做清单</h4><p>泰山门票 ¥115（2 天有效，现场或「泰山景区」公众号购买）、岱庙 ¥20（现场购票）、山顶宾馆（提前 1 周以上预订，暑期极抢手）、高铁票（提前 15 天 12306 购买）。</p></div>
+      <div class="tip-card"><h4>🚶 红门徒步攻略</h4><p><b>红门线是泰山最经典登山路线，全程约 7km，约 6000 级台阶，海拔从 150m 升至 1545m。</b>适合带孩子体验登山的完整过程。前半程（红门→中天门）景点丰富，节奏慢；后半程（中天门→南天门）十八盘最陡，是最大挑战。<b>建议 7:30 出发，避开旅游团高峰。</b></p></div>
+      <div class="tip-card"><h4>🏨 住宿策略</h4><p>两晚住不同地方：<b>Day 1 住红门附近</b>（¥250–400/晚，行李寄存），<b>Day 2 住山顶天街附近</b>（¥400–1200/晚，看日出唯一方式）。山脚酒店选汉庭/7天等连锁，山顶选神憩/南天门宾馆等位置最近的。大件行李留山脚，只带背包上山。</p></div>
+      <div class="tip-card"><h4>👶 亲子登山节奏</h4><p><b>核心：10 分钟走 + 5 分钟歇</b>——孩子体力有限，不要赶时间。上山时多鼓励，讲沿途故事分散注意力；十八盘是最大挑战，教孩子走 Z 字形路线省力。下山时保护膝盖，必要时从中天门坐索道/大巴。3 岁+孩子完全能胜任红门线徒步。</p></div>
+      <div class="tip-card altai"><h4>🌧️ 雨天徒步注意事项</h4><p>7 月泰山多阵雨，遇雨不要慌：① 穿雨衣而非打伞（台阶陡，伞不安全）；② 石板路雨后湿滑，放慢脚步；③ 雨后泰山云雾缭绕，别有一番美景；④ 雷雨天不要在树下停留，就近找避雨处。</p></div>
+      <div class="tip-card"><h4>⛰️ 全程海拔阶梯</h4><p><b>Day1</b> 南京≈10m → 泰安站≈130m → 岱庙≈150m（平原城市）｜<b>Day2</b> 红门≈150m → 斗母宫≈300m → 经石峪≈400m → 中天门≈840m → 十八盘→南天门≈1460m → 玉皇顶≈1545m（山顶最高⚠️）｜<b>Day3</b> 徒步降至≈150m → 泰安站→南京。<b>泰山最高 1545m，无高原反应风险</b>，但徒步登山体力消耗大。</p></div>
+      <div class="tip-card"><h4>👟 鞋子选择</h4><p><b>必须穿防滑运动鞋</b>——泰山台阶多为石板路，雨天非常湿滑，普通运动鞋容易打滑。鞋底要有深纹路，鞋身防水更好。不要穿凉鞋、拖鞋或新鞋（磨脚）。带孩子可以准备护膝，下山时保护膝盖。</p></div>
+      <div class="tip-card"><h4>💰 预算总览（人均）</h4><p>高铁往返 ¥340–400｜住宿 2 晚 ¥350–700（山脚分摊+山顶分摊）｜门票 ¥135（泰山 ¥115+岱庙 ¥20）｜封禅大典演出 ¥168–298｜餐饮 ¥350–450｜打车 ¥100｜索道+大巴（如使用）¥135｜合计约 ¥1800–3000。3 人总计约 ¥5400–9000。</p></div>
+      <div class="tip-card"><h4>📱 推荐 App</h4><p>高德/百度地图（导航+打车）、12306（高铁购票）、「泰山景区」官方公众号（门票+实时天气+日出时间）、大众点评（餐厅排队取号）、墨迹天气（山区阵雨预警）。</p></div>
+    </div>
+  </div>
+
+  <div class="disclaimer">⚠️ 以上信息基于公开资料整理（2025–2026），实际票价、预约政策、高铁时刻以各景区/铁路/平台官方发布为准，出行前请二次核实。</div>
+</div>
+
+<script>
+// ====== MAP ======
+const map = L.map('map',{scrollWheelZoom:true,zoomControl:true,attributionControl:true}).setView([36.22,117.09],13);
+
+L.tileLayer('https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}',{
+  subdomains:['1','2','3','4'],maxZoom:17,attribution:'© Amap'
+}).addTo(map);
+
+const PTS = {
+  'taian-station': {ll:[36.1956,117.0875], name:'泰安站（高铁）', type:'airport', day:'Day1 抵达 / Day3 返程', alt:'海拔约130m'},
+  'dai-temple':    {ll:[36.1963,117.0858], name:'岱庙', type:'spot', day:'Day1', alt:'海拔约150m'},
+  'old-street':    {ll:[36.1920,117.0880], name:'泰安老街', type:'spot', day:'Day1/Day3', alt:'海拔约130m'},
+  'hongmen':       {ll:[36.2200,117.0900], name:'红门登山口', type:'spot', day:'Day2/Day3', alt:'海拔约150m'},
+  'doumugong':     {ll:[36.2260,117.0920], name:'斗母宫', type:'spot', day:'Day2', alt:'海拔约300m'},
+  'jingshiyu':     {ll:[36.2290,117.0940], name:'经石峪', type:'spot', day:'Day2', alt:'海拔约400m'},
+  'zhongtianmen':  {ll:[36.2385,117.0970], name:'中天门', type:'spot', day:'Day2/Day3', alt:'海拔约840m'},
+  'nantianmen':    {ll:[36.2535,117.1025], name:'南天门', type:'spot', day:'Day2/Day3', alt:'海拔约1460m'},
+  'tianjie':       {ll:[36.2525,117.1015], name:'天街', type:'spot', day:'Day2', alt:'海拔约1450m'},
+  'bixia':         {ll:[36.2538,117.1030], name:'碧霞祠', type:'spot', day:'Day2', alt:'海拔约1500m'},
+  'wuyue':         {ll:[36.2542,117.1010], name:'五岳独尊石刻', type:'spot', day:'Day2', alt:'海拔约1520m'},
+  'yuhuang':       {ll:[36.2552,117.1018], name:'玉皇顶（泰山极顶）', type:'spot', day:'Day2', alt:'海拔1545m ⚠️ 最高点'},
+  'hotel-foot':    {ll:[36.2180,117.0910], name:'山脚酒店（红门附近）', type:'hotel', day:'Day1 住宿', alt:'海拔约150m'},
+  'hotel-top':     {ll:[36.2530,117.1020], name:'山顶宾馆（天街附近）', type:'hotel', day:'Day2 住宿', alt:'海拔约1460m'},
+  'fengchan':      {ll:[36.2950,117.1550], name:'封禅大典演出剧场', type:'spot', day:'Day1', alt:'海拔约400m'}
+};
+
+const icon = (c)=>L.divIcon({className:'',html:`<div style="width:18px;height:18px;border-radius:50%;background:${c};border:3px solid #fff;box-shadow:0 0 0 2px ${c},0 2px 6px rgba(0,0,0,.4)"></div>`,iconSize:[18,18],iconAnchor:[9,9]});
+const stayIcon = L.divIcon({className:'',html:'<div style="font-size:20px">🏨</div>',iconSize:[24,24],iconAnchor:[12,12]});
+
+const markers = {};
+Object.entries(PTS).forEach(([k,v])=>{
+  let m;
+  if(v.type==='hotel'){
+    m = L.marker(v.ll,{icon:stayIcon}).addTo(map);
+    m.bindPopup(`<div class="marker-pop"><b>🏨 ${v.name}</b><br>📍 海拔 <b style="color:#f97316">${v.alt||'—'}</b><br>${v.day}</div>`);
+  } else {
+    const col = v.type==='airport' ? '#ef4444' : '#059669';
+    m = L.marker(v.ll,{icon:icon(col)}).addTo(map);
+    m.bindPopup(`<div class="marker-pop"><b>${v.name}</b><br>📍 海拔 <b style="color:#f97316">${v.alt||'—'}</b><br>${v.day}</div>`);
+  }
+  markers[k]=m;
+});
+
+const ROUTES = [
+  {color:'#059669', pts:[['taian-station'],['hotel-foot'],['dai-temple'],['old-street'],['hotel-foot'],['fengchan'],['hotel-foot']]},
+  {color:'#f97316', pts:[['hotel-foot'],['hongmen'],['doumugong'],['jingshiyu'],['zhongtianmen'],['nantianmen'],['tianjie'],['bixia'],['wuyue'],['yuhuang']]},
+  {color:'#8b5cf6', pts:[['yuhuang'],['nantianmen'],['zhongtianmen'],['hongmen'],['hotel-foot'],['old-street'],['taian-station']], dash:true}
+];
+ROUTES.forEach(r=>{
+  const latlngs = r.pts.map(p=> Array.isArray(p)&&typeof p[0]==='string' ? PTS[p[0]].ll : p);
+  L.polyline(latlngs,{color:r.color,weight:3.5,opacity:.8,dashArray: r.dash ? '8,6' : null}).addTo(map);
+});
+
+const DIST = [
+  {from:[36.1956,117.0875],to:[36.2180,117.0910],txt:'5km'},
+  {from:[36.2180,117.0910],to:[36.2200,117.0900],txt:'步行5min'},
+  {from:[36.2200,117.0900],to:[36.2385,117.0970],txt:'🚶2.5h'},
+  {from:[36.2385,117.0970],to:[36.2535,117.1025],txt:'🚶2.5h'},
+  {from:[36.2525,117.1015],to:[36.2552,117.1018],txt:'步行15min'}
+];
+DIST.forEach(d=>{
+  const mid=[(d.from[0]+d.to[0])/2,(d.from[1]+d.to[1])/2];
+  L.marker(mid,{icon:L.divIcon({className:'',html:`<div style="background:#fff;border:1px solid #f97316;color:#f97316;font-size:11px;font-weight:700;padding:1px 6px;border-radius:10px;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.2)">${d.txt}</div>`,iconSize:[40,16],iconAnchor:[20,8]})}).addTo(map);
+});
+
+document.querySelectorAll('[data-pt]').forEach(el=>{
+  const k = el.getAttribute('data-pt');
+  const v = PTS[k];
+  if(v && v.alt){
+    const tag=document.createElement('span');
+    tag.className='chip';
+    tag.style.cssText='background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;font-weight:600';
+    tag.textContent='⛰️ 海拔 '+v.alt;
+    el.parentNode.insertBefore(tag, el.nextSibling);
+  }
+  el.addEventListener('click',e=>{
+    e.preventDefault();
+    const k = el.getAttribute('data-pt');
+    const v = PTS[k];
+    if(!v) return;
+    map.flyTo(v.ll, 15, {duration:1.2});
+    setTimeout(()=>{ markers[k] && markers[k].openPopup(); }, 1300);
+    el.style.color='#f97316';
+  });
+});
+
+const _mapEl = document.getElementById('map');
+setTimeout(()=>map.invalidateSize(),300);
+setTimeout(()=>map.invalidateSize(),800);
+if(window.ResizeObserver){
+  new ResizeObserver(()=>map.invalidateSize()).observe(_mapEl);
+}
+window.addEventListener('resize',()=>map.invalidateSize());
+</script>
+</body>
+</html>
