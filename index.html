@@ -17,23 +17,23 @@
     --taishan:#f97316; --taishan-d:#c2410c;
   }
   *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:"PingFang SC","Microsoft YaHei",system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6;min-height:100vh}
+  body{font-family:"PingFang SC","Microsoft YaHei",system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--ink);line-height:1.65;min-height:100vh;font-size:16px}
 
   /* header */
-  header{background:linear-gradient(135deg,#0369a1 0%,#0ea5e9 50%,#10b981 100%);color:#fff;padding:30px 28px 26px;position:relative;overflow:hidden}
+  header{background:linear-gradient(135deg,#0369a1 0%,#0ea5e9 50%,#10b981 100%);color:#fff;padding:32px 30px 28px;position:relative;overflow:hidden}
   header::before{content:"";position:absolute;top:-50%;right:-10%;width:420px;height:420px;background:radial-gradient(circle,rgba(255,255,255,.14) 0%,transparent 70%);border-radius:50%;pointer-events:none}
-  header h1{font-size:26px;font-weight:700;letter-spacing:1px;position:relative}
-  header .sub{font-size:14px;opacity:.92;margin-top:8px;position:relative}
-  .header-stats{display:flex;gap:14px;flex-wrap:wrap;margin-top:16px;position:relative}
-  .stat-pill{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.28);border-radius:30px;padding:6px 14px;font-size:12.5px;backdrop-filter:blur(4px)}
-  .stat-pill b{font-size:14px}
+  header h1{font-size:28px;font-weight:700;letter-spacing:1px;position:relative}
+  header .sub{font-size:16px;opacity:.92;margin-top:8px;position:relative}
+  .header-stats{display:flex;gap:16px;flex-wrap:wrap;margin-top:18px;position:relative}
+  .stat-pill{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.28);border-radius:30px;padding:7px 16px;font-size:14px;backdrop-filter:blur(4px)}
+  .stat-pill b{font-size:15px}
 
   /* main */
-  .wrap{max-width:1280px;margin:0 auto;padding:22px 16px 40px}
+  .wrap{max-width:1280px;margin:0 auto;padding:24px 18px 42px}
 
   /* section title */
-  .sec-title{font-size:15px;font-weight:700;color:var(--brand-d);margin:8px 0 14px;display:flex;align-items:center;gap:8px}
-  .sec-title::before{content:"";display:inline-block;width:4px;height:16px;background:linear-gradient(180deg,var(--brand),var(--green));border-radius:2px}
+  .sec-title{font-size:17px;font-weight:700;color:var(--brand-d);margin:10px 0 16px;display:flex;align-items:center;gap:8px}
+  .sec-title::before{content:"";display:inline-block;width:4px;height:17px;background:linear-gradient(180deg,var(--brand),var(--green));border-radius:2px}
 
   /* city grid */
   .city-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:18px;margin-bottom:26px}
@@ -55,74 +55,77 @@
   .city-card.taishan .card-cover{background:linear-gradient(135deg,#f97316 0%,#c2410c 100%)}
   .card-cover::before{content:"";position:absolute;top:0;left:0;right:0;bottom:0;background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><circle cx='20' cy='30' r='1.5' fill='%23ffffff' opacity='0.15'/><circle cx='70' cy='60' r='1' fill='%23ffffff' opacity='0.12'/><circle cx='40' cy='80' r='1.2' fill='%23ffffff' opacity='0.18'/><circle cx='85' cy='20' r='0.8' fill='%23ffffff' opacity='0.15'/><circle cx='55' cy='40' r='1' fill='%23ffffff' opacity='0.1'/></svg>");opacity:.6;pointer-events:none}
   .city-emblem{position:absolute;top:14px;right:18px;font-size:80px;opacity:.25;line-height:1;pointer-events:none}
-  .cover-tag{position:absolute;top:16px;left:18px;background:rgba(255,255,255,.25);border:1px solid rgba(255,255,255,.35);color:#fff;padding:3px 10px;border-radius:20px;font-size:11.5px;font-weight:600;backdrop-filter:blur(4px)}
+  .cover-tag{position:absolute;top:16px;left:18px;background:rgba(255,255,255,.25);border:1px solid rgba(255,255,255,.35);color:#fff;padding:3px 10px;border-radius:20px;font-size:13px;font-weight:600;backdrop-filter:blur(4px)}
   .cover-title{position:relative;color:#fff;z-index:1}
-  .cover-title h2{font-size:22px;font-weight:700;letter-spacing:.5px;display:flex;align-items:center;gap:8px}
-  .cover-title .days{font-size:12.5px;opacity:.92;margin-top:4px;font-weight:500}
+  .cover-title h2{font-size:24px;font-weight:700;letter-spacing:.5px;display:flex;align-items:center;gap:8px}
+  .cover-title .days{font-size:13.5px;opacity:.92;margin-top:4px;font-weight:500}
 
   /* card body */
   .card-body{padding:18px 20px 20px;flex:1;display:flex;flex-direction:column}
-  .route-line{font-size:13.5px;color:var(--sub);margin-bottom:12px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+  .route-line{font-size:15px;color:var(--sub);margin-bottom:12px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
   .route-line .arr{color:var(--brand);font-weight:700}
   .highlights{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
-  .hl-chip{font-size:11.5px;padding:3px 9px;border-radius:14px;background:#f1f5f9;color:#475569;font-weight:600;border:1px solid #e2e8f0}
+  .hl-chip{font-size:13px;padding:3px 9px;border-radius:14px;background:#f1f5f9;color:#475569;font-weight:600;border:1px solid #e2e8f0}
   .city-card.chengdu .hl-chip.tag{background:#e0f2fe;color:#0369a1;border-color:#bae6fd}
   .city-card.guizhou .hl-chip.tag{background:#d1fae5;color:#065f46;border-color:#a7f3d0}
   .city-card.taishan .hl-chip.tag{background:#fff7ed;color:#c2410c;border-color:#fed7aa}
 
   /* info rows */
-  .info-row{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;color:var(--sub);padding:7px 0;border-top:1px dashed var(--line)}
+  .info-row{display:flex;justify-content:space-between;align-items:center;font-size:14px;color:var(--sub);padding:7px 0;border-top:1px dashed var(--line)}
   .info-row .lbl{display:flex;align-items:center;gap:5px}
   .info-row .val{color:var(--ink);font-weight:600}
-  .info-row .val.price{color:var(--accent);font-size:14px}
+  .info-row .val.price{color:var(--accent);font-size:15px}
 
   /* card cta */
-  .card-cta{margin:16px 0 0;padding:11px 0;background:var(--brand);color:#fff;text-align:center;border-radius:10px;font-size:13.5px;font-weight:700;letter-spacing:.5px;transition:all .25s}
+  .card-cta{margin:16px 0 0;padding:11px 0;background:var(--brand);color:#fff;text-align:center;border-radius:10px;font-size:15px;font-weight:700;letter-spacing:.5px;transition:all .25s}
 
   /* overview map */
   .map-panel{background:#fff;border-radius:18px;padding:16px;box-shadow:0 4px 18px rgba(0,0,0,.06);border:1px solid var(--line);margin-bottom:22px}
-  .map-panel h3{font-size:15px;font-weight:700;color:var(--brand-d);margin-bottom:10px;display:flex;align-items:center;gap:8px}
-  .map-panel h3::before{content:"";display:inline-block;width:4px;height:15px;background:linear-gradient(180deg,var(--brand),var(--green));border-radius:2px}
+  .map-panel h3{font-size:16px;font-weight:700;color:var(--brand-d);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+  .map-panel h3::before{content:"";display:inline-block;width:4px;height:16px;background:linear-gradient(180deg,var(--brand),var(--green));border-radius:2px}
   #map{width:100%;height:380px;border-radius:12px;border:1px solid var(--line);background:#e8eaed}
 
   /* footer */
-  footer{text-align:center;padding:18px 12px 30px;color:var(--sub);font-size:12px}
+  footer{text-align:center;padding:18px 12px 30px;color:var(--sub);font-size:14px}
   footer .ver{color:var(--brand);font-weight:600}
 
   /* tablet */
   @media(max-width:900px){
     .city-grid{grid-template-columns:1fr;gap:14px}
-    header{padding:22px 18px}
-    header h1{font-size:21px}
-    .wrap{padding:18px 12px 30px}
+    header{padding:24px 20px}
+    header h1{font-size:24px}
+    .wrap{padding:20px 14px 32px}
   }
   /* phone */
   @media(max-width:640px){
-    header{padding:18px 14px}
-    header h1{font-size:18px;line-height:1.35}
-    header .sub{font-size:12.5px}
-    .header-stats{gap:8px;margin-top:12px}
-    .stat-pill{font-size:11.5px;padding:5px 11px}
-    .stat-pill b{font-size:13px}
-    .wrap{padding:14px 10px 24px}
+    header{padding:20px 16px}
+    header h1{font-size:20px;line-height:1.35}
+    header .sub{font-size:14px}
+    .header-stats{gap:10px;margin-top:14px}
+    .stat-pill{font-size:13px;padding:6px 12px}
+    .stat-pill b{font-size:14px}
+    .wrap{padding:16px 12px 28px}
     .card-cover{height:140px;padding:14px}
     .city-emblem{font-size:60px;top:10px;right:14px}
-    .cover-title h2{font-size:18px}
-    .cover-title .days{font-size:11.5px}
+    .cover-tag{font-size:12px}
+    .cover-title h2{font-size:20px}
+    .cover-title .days{font-size:12.5px}
     .card-body{padding:14px 15px 16px}
-    .route-line{font-size:12.5px}
-    .info-row{font-size:12px}
-    .info-row .val.price{font-size:13px}
-    .card-cta{font-size:13px;padding:10px 0}
+    .route-line{font-size:14px}
+    .hl-chip{font-size:12px}
+    .info-row{font-size:13px}
+    .info-row .val.price{font-size:14px}
+    .card-cta{font-size:14px;padding:10px 0}
     #map{height:280px;border-radius:10px}
     .map-panel{padding:12px;border-radius:14px}
-    .map-panel h3{font-size:13.5px}
+    .map-panel h3{font-size:14.5px}
   }
   @media(max-width:380px){
-    header h1{font-size:16.5px}
-    .stat-pill{font-size:11px;padding:4px 9px}
-    .cover-title h2{font-size:16.5px}
+    header h1{font-size:18px}
+    .stat-pill{font-size:12px;padding:5px 10px}
+    .cover-title h2{font-size:18px}
     .city-emblem{font-size:48px}
+    .route-line{font-size:13px}
   }
 </style>
 </head>
@@ -235,25 +238,25 @@
     <!-- 泰山 -->
     <a class="city-card taishan" href="./taishan/index.html">
       <div class="card-cover">
-        <span class="cover-tag">已上线 · 亲子登山版</span>
-        <span class="city-emblem">⛰️</span>
+        <span class="cover-tag">已上线 · 红门徒步版</span>
+        <span class="city-emblem">🏔️</span>
         <div class="cover-title">
           <h2>泰山</h2>
-          <div class="days">3 天 2 晚 · 南京往返 · 高铁+索道</div>
+          <div class="days">3 天 2 晚 · 南京往返 · 高铁+红门全程徒步</div>
         </div>
       </div>
       <div class="card-body">
         <div class="route-line">
-          <span class="arr">南京 🚄</span> → 泰安（岱庙）→ 天外村大巴/中天门索道 → 南天门/天街/碧霞祠/玉皇顶（住山顶看日出）→ 下山炒鸡豆腐 🚄 <span class="arr">南京</span>
+          <span class="arr">南京 🚄</span> → 泰安（岱庙）→ 晚上封禅大典演出 → 红门徒步登山（斗母宫/经石峪/十八盘）→ 南天门/天街/碧霞祠/玉皇顶（住山顶看日出）→ 下山炒鸡豆腐 🚄 <span class="arr">南京</span>
         </div>
         <div class="highlights">
           <span class="hl-chip tag">泰山日出</span>
+          <span class="hl-chip tag">红门徒步</span>
+          <span class="hl-chip tag">封禅大典</span>
+          <span class="hl-chip tag">十八盘</span>
           <span class="hl-chip tag">玉皇顶</span>
           <span class="hl-chip tag">岱庙封禅</span>
           <span class="hl-chip tag">五岳独尊</span>
-          <span class="hl-chip tag">碧霞祠</span>
-          <span class="hl-chip tag">天街</span>
-          <span class="hl-chip tag">索道登山</span>
           <span class="hl-chip tag">泰山炒鸡</span>
         </div>
         <div class="info-row">
@@ -270,7 +273,7 @@
         </div>
         <div class="info-row">
           <span class="lbl">💰 人均预算</span>
-          <span class="val price">¥1600–2600</span>
+          <span class="val price">¥1800–3000</span>
         </div>
         <div class="card-cta">查看完整行程 →</div>
       </div>
@@ -302,7 +305,7 @@ L.tileLayer('https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scal
 const CITIES = [
   {key:'chengdu', name:'成都及周边', ll:[30.66,103.92],  color:'#0ea5e9', dark:'#0369a1', url:'./chengdu/index.html', days:'6 天 5 晚', budget:'¥4300–5700', emblem:'🐼'},
   {key:'guizhou', name:'贵州全景',   ll:[26.65,106.71],  color:'#10b981', dark:'#0d9488', url:'./guizhou/index.html', days:'7 天 6 晚', budget:'¥4800–6800', emblem:'⛰️'},
-  {key:'taishan', name:'泰山',       ll:[36.25,117.10],  color:'#f97316', dark:'#c2410c', url:'./taishan/index.html', days:'3 天 2 晚', budget:'¥1600–2600', emblem:'🏔️'}
+  {key:'taishan', name:'泰山',       ll:[36.25,117.10],  color:'#f97316', dark:'#c2410c', url:'./taishan/index.html', days:'3 天 2 晚', budget:'¥1800–3000', emblem:'🏔️'}
 ];
 
 const buildIcon = (c, e)=> L.divIcon({
